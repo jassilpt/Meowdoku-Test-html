@@ -4,35 +4,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Meowdoku — Cozy Cat Logic Puzzle</title>
+  <title>Meowdoku v1.3 — Cozy Cat Logic Puzzle</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
 
   <style>
     /* ==========================================================================
-       DESIGN TOKENS & THEME VARIABLES (Authentic Cozy Meowdoku Palette)
+       DESIGN TOKENS & LIGHT / DARK THEME VARIABLES (Meowdoku v1.3)
        ========================================================================== */
     :root {
-      --bg-page: #FAF6F0;
+      --bg-page: #FAF6F2;
       --bg-surface: #FFFFFF;
-      --bg-surface-soft: #F3ECE2;
-      --bg-surface-hover: #EAE0D3;
+      --bg-surface-soft: #F3ECE4;
+      --bg-surface-hover: #EAE0D5;
       --board-bg: #FFFFFF;
       --text-primary: #3B2B26;
       --text-secondary: #75625A;
-      --text-muted: #A18F86;
+      --text-muted: #9A887F;
       --accent: #E07A5F;
       --accent-hover: #CC654A;
       --accent-soft: rgba(224, 122, 95, 0.14);
-      --success: #2F8F63;
-      --success-soft: rgba(47, 143, 99, 0.14);
+      --success: #2D8A57;
+      --success-soft: rgba(45, 138, 87, 0.14);
       --danger: #D93838;
       --danger-soft: rgba(217, 56, 56, 0.14);
       --danger-ring: #E03E3E;
       --hint-bg: #FFF9E6;
       --hint-border: #E8B84B;
       --hint-text: #5E3F07;
+      --hint-tag-bg: rgba(224, 145, 31, 0.18);
       --hint-btn-bg: #E0911F;
       --hint-btn-hover: #C87D12;
 
@@ -41,10 +42,8 @@
       --shadow-md: 0 8px 24px rgba(59, 43, 38, 0.08);
       --shadow-lg: 0 18px 44px rgba(59, 43, 38, 0.18);
 
-      /* Tile Marks (Crisp Solid-White X directly on colored tile) */
       --mark-color: #FFFFFF;
-      --mark-shadow: rgba(0, 0, 0, 0.18);
-      --mark-auto-opacity: 0.9;
+      --mark-shadow: rgba(0, 0, 0, 0.24);
     }
 
     [data-theme="dark"] {
@@ -67,6 +66,7 @@
       --hint-bg: #332917;
       --hint-border: #B5872D;
       --hint-text: #FCE6A8;
+      --hint-tag-bg: rgba(240, 180, 60, 0.22);
       --hint-btn-bg: #D99A26;
       --hint-btn-hover: #E6AA38;
 
@@ -76,12 +76,11 @@
       --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.65);
 
       --mark-color: #FFFFFF;
-      --mark-shadow: rgba(0, 0, 0, 0.24);
-      --mark-auto-opacity: 0.9;
+      --mark-shadow: rgba(0, 0, 0, 0.32);
     }
 
     /* ==========================================================================
-       BASE & LAYOUT
+       BASE & RESPONSIVE LAYOUT
        ========================================================================== */
     * {
       box-sizing: border-box;
@@ -104,21 +103,22 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       min-height: 100dvh;
       padding: 10px 12px 16px;
     }
 
     .app-shell {
       width: 100%;
-      max-width: 468px;
+      max-width: 440px;
       display: flex;
       flex-direction: column;
       gap: 8px;
+      margin: auto 0;
     }
 
     /* ==========================================================================
-       HEADER BAR
+       HEADER BAR WITH GREEN v1.3 PILL BADGE
        ========================================================================== */
     .header {
       display: flex;
@@ -131,6 +131,7 @@
       display: flex;
       align-items: center;
       gap: 9px;
+      min-width: 0;
     }
 
     .brand-icon {
@@ -152,30 +153,34 @@
 
     .brand-title-row {
       display: flex;
-      align-items: baseline;
-      gap: 7px;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
     }
 
     .brand-text h1 {
       font-family: 'Fredoka', sans-serif;
-      font-size: 1.42rem;
+      font-size: 1.38rem;
       line-height: 1.05;
       font-weight: 700;
       letter-spacing: -0.01em;
     }
 
-    .level-pill {
-      font-family: 'Fredoka', sans-serif;
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--accent);
-      background: var(--accent-soft);
+    .version-badge {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      color: var(--success);
+      background: var(--success-soft);
+      border: 1px solid rgba(45, 138, 87, 0.32);
       padding: 2px 8px;
       border-radius: 999px;
+      line-height: 1.25;
     }
 
     .brand-subtitle {
-      font-size: 0.7rem;
+      font-size: 0.69rem;
       font-weight: 600;
       color: var(--text-muted);
       margin-top: 2px;
@@ -186,11 +191,12 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      flex-shrink: 0;
     }
 
     .icon-btn {
-      width: 37px;
-      height: 37px;
+      width: 36px;
+      height: 36px;
       border-radius: 12px;
       border: 1px solid var(--border-subtle);
       background: var(--bg-surface);
@@ -217,39 +223,44 @@
     }
 
     /* ==========================================================================
-       BOARD SIZE SELECTOR TABS (6x6 to 10x10)
+       SIZE / MODE SELECTOR TABS (6x6, 7x7, 8x8, 9x9, 10x10, Daily)
        ========================================================================== */
-    .size-bar {
+    .mode-bar {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 5px;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 4px;
       background: var(--bg-surface-soft);
       padding: 4px;
       border-radius: 14px;
       border: 1px solid var(--border-subtle);
     }
 
-    .size-btn {
+    .mode-btn {
       border: none;
       background: transparent;
       color: var(--text-secondary);
       font-family: inherit;
-      font-size: 0.76rem;
+      font-size: 0.72rem;
       font-weight: 700;
-      padding: 7px 4px;
+      padding: 7px 2px;
       border-radius: 10px;
       cursor: pointer;
       transition: background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+      white-space: nowrap;
     }
 
-    .size-btn.active {
+    .mode-btn.active {
       background: var(--bg-surface);
       color: var(--accent);
       box-shadow: var(--shadow-sm);
     }
 
+    .mode-btn.daily-btn.active {
+      color: #D98218;
+    }
+
     /* ==========================================================================
-       STATUS STRIP (Cat Counter, 3 Fish Lives, Timer, Solved)
+       STATS BAR (Cat Progress, 3 Fish Lives, Level, Timer, Mistakes)
        ========================================================================== */
     .status-strip {
       display: flex;
@@ -259,52 +270,56 @@
       background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
       border-radius: 15px;
-      padding: 7px 11px;
+      padding: 7px 10px;
       box-shadow: var(--shadow-sm);
+    }
+
+    .status-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .cat-counter-pill {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       background: var(--bg-surface-soft);
-      padding: 4px 10px 4px 7px;
+      padding: 4px 9px 4px 6px;
       border-radius: 999px;
       font-weight: 800;
-      font-size: 0.84rem;
+      font-size: 0.8rem;
       font-variant-numeric: tabular-nums;
       color: var(--text-primary);
     }
 
     .cat-counter-pill svg {
-      width: 20px;
-      height: 20px;
+      width: 19px;
+      height: 19px;
       flex-shrink: 0;
     }
 
-    .cat-count-num {
-      color: var(--success);
-    }
+    .cat-count-num { color: var(--success); }
 
     .fish-lives {
       display: inline-flex;
       align-items: center;
-      gap: 3px;
+      gap: 2px;
       background: var(--bg-surface-soft);
-      padding: 4px 9px;
+      padding: 4px 7px;
       border-radius: 999px;
     }
 
     .fish-icon {
-      width: 21px;
-      height: 21px;
+      width: 19px;
+      height: 19px;
       transition: transform 0.25s ease, filter 0.3s ease, opacity 0.3s ease;
     }
 
     .fish-icon.lost {
       filter: grayscale(1);
-      opacity: 0.26;
-      transform: scale(0.86);
+      opacity: 0.24;
+      transform: scale(0.84);
     }
 
     .fish-icon.losing {
@@ -314,7 +329,7 @@
     .mini-stats {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 9px;
     }
 
     .mini-stat {
@@ -325,7 +340,7 @@
     }
 
     .mini-stat-lbl {
-      font-size: 0.59rem;
+      font-size: 0.56rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.03em;
@@ -333,24 +348,26 @@
     }
 
     .mini-stat-val {
-      font-size: 0.8rem;
+      font-size: 0.77rem;
       font-weight: 800;
       font-variant-numeric: tabular-nums;
       color: var(--text-primary);
       margin-top: 1px;
     }
 
+    .mini-stat-val.has-mistakes { color: var(--danger); }
+
     /* ==========================================================================
-       COMPACT 3-PART RULES STRIP
+       COMPACT 3-RULE STRIP
        ========================================================================== */
     .rules-strip {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 6px;
+      grid-template-columns: 1fr 1.1fr 1.3fr;
+      gap: 5px;
       background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
-      border-radius: 14px;
-      padding: 6px;
+      border-radius: 13px;
+      padding: 5px;
       box-shadow: var(--shadow-sm);
     }
 
@@ -360,13 +377,13 @@
       justify-content: center;
       gap: 5px;
       background: var(--bg-surface-soft);
-      border-radius: 10px;
-      padding: 5px 6px;
-      font-size: 0.67rem;
+      border-radius: 9px;
+      padding: 5px 5px;
+      font-size: 0.64rem;
       font-weight: 700;
       color: var(--text-secondary);
       text-align: center;
-      line-height: 1.2;
+      line-height: 1.18;
     }
 
     .rule-pill-dot {
@@ -377,10 +394,10 @@
     }
 
     /* ==========================================================================
-       STATUS / HINT / WARNING BANNER
+       INSTRUCTION / HINT / WARNING BANNER
        ========================================================================== */
     .banner-slot {
-      min-height: 44px;
+      min-height: 46px;
       display: flex;
       align-items: center;
     }
@@ -393,7 +410,7 @@
       gap: 8px;
       padding: 8px 11px;
       border-radius: 13px;
-      font-size: 0.76rem;
+      font-size: 0.75rem;
       font-weight: 600;
       line-height: 1.35;
       border: 1px solid var(--border-subtle);
@@ -423,6 +440,27 @@
       font-weight: 700;
     }
 
+    .banner-body {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .hint-rule-tag {
+      display: inline-block;
+      align-self: flex-start;
+      font-size: 0.64rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background: var(--hint-tag-bg);
+      color: var(--hint-text);
+      padding: 1px 7px;
+      border-radius: 999px;
+      margin-bottom: 1px;
+    }
+
     .banner-actions {
       display: flex;
       align-items: center;
@@ -437,7 +475,7 @@
       font-family: inherit;
       font-size: 0.72rem;
       font-weight: 800;
-      padding: 6px 10px;
+      padding: 7px 11px;
       border-radius: 9px;
       cursor: pointer;
       white-space: nowrap;
@@ -452,21 +490,21 @@
       border: none;
       background: transparent;
       color: inherit;
-      font-size: 1.15rem;
+      font-size: 1.2rem;
       font-weight: 700;
       cursor: pointer;
-      padding: 2px 4px;
-      opacity: 0.75;
+      padding: 2px 5px;
+      opacity: 0.78;
     }
 
     /* ==========================================================================
-       AUTHENTIC MEOWDOKU ROUNDED TILE BOARD (Clean White Gaps, No Thick Borders)
+       AUTHENTIC ROUNDED-TILE BOARD (EXPLICIT DIMENSIONS SO IT NEVER COLLAPSES)
        ========================================================================== */
     .board-card {
       position: relative;
       width: 100%;
+      max-width: 420px;
       aspect-ratio: 1 / 1;
-      max-width: 444px;
       margin: 0 auto;
       background: var(--board-bg);
       padding: 8px;
@@ -481,28 +519,46 @@
     .board-grid {
       width: 100%;
       height: 100%;
+      min-width: 0;
+      min-height: 0;
+      aspect-ratio: 1 / 1;
       display: grid;
-      gap: 3.5px;
+      gap: 4px;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .board-grid.size-9 { gap: 3px; }
-    .board-grid.size-10 { gap: 2.5px; }
+    .board-grid.size-6 { gap: 5px; }
+    .board-grid.size-7 { gap: 5px; }
+    .board-grid.size-8 { gap: 4px; }
+    .board-grid.size-9 { gap: 4px; }
+    .board-grid.size-10 { gap: 4px; }
 
     .tile {
       position: relative;
+      min-width: 0;
+      min-height: 0;
+      width: 100%;
+      height: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
       border-radius: 9px;
       cursor: pointer;
       overflow: hidden;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
       transition: transform 0.1s ease, filter 0.12s ease;
       box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.22);
     }
 
     .board-grid.size-8 .tile { border-radius: 8px; }
     .board-grid.size-9 .tile { border-radius: 7px; }
-    .board-grid.size-10 .tile { border-radius: 6.5px; }
+    .board-grid.size-10 .tile { border-radius: 6px; }
 
     @media (hover: hover) {
       .tile:hover { filter: brightness(1.04); }
@@ -518,29 +574,38 @@
       pointer-events: none;
       opacity: 0.16;
       color: #2B1C14;
-      transition: opacity 0.18s ease;
+      transition: opacity 0.14s ease;
       z-index: 1;
     }
 
     [data-theme="dark"] .tile-pattern {
-      opacity: 0.2;
+      opacity: 0.22;
       color: #120B08;
     }
 
-    /* Hide embossed pattern completely when tile has a Cat or X mark */
+    /* Hide embossed pattern completely whenever tile has an X mark or Cat */
     .tile.has-cat .tile-pattern,
     .tile.has-x .tile-pattern {
       opacity: 0;
     }
 
-    /* Large, Chunky Solid-White X Mark directly on the colored tile */
-    .mark-x {
+    .tile-layer {
       position: relative;
       z-index: 3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    /* LARGE SOLID-WHITE X MARK (64% size, stroke-width 4.6, NO dark circle) */
+    .mark-x {
       width: 64%;
       height: 64%;
       pointer-events: none;
-      filter: drop-shadow(0 1px 2px var(--mark-shadow));
+      filter: drop-shadow(0 1.5px 2px var(--mark-shadow));
       animation: markPop 0.14s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
@@ -550,20 +615,15 @@
       stroke-linecap: round;
     }
 
+    /* Auto-X: 60% size at 88% white opacity */
     .tile.auto-x .mark-x {
-      width: 62%;
-      height: 62%;
-      opacity: var(--mark-auto-opacity);
+      width: 60%;
+      height: 60%;
+      opacity: 0.88;
     }
 
-    .tile.auto-x .mark-x line {
-      stroke-width: 4.6;
-    }
-
-    /* Cute Placed Cat Face */
+    /* Cute Placed Tuxedo Cat Face */
     .cat-svg {
-      position: relative;
-      z-index: 4;
       width: 82%;
       height: 82%;
       pointer-events: none;
@@ -627,47 +687,14 @@
       position: absolute;
       inset: 0;
       border-radius: inherit;
-      border: 2.5px dashed rgba(255, 255, 255, 0.92);
+      border: 2.5px dashed rgba(255, 255, 255, 0.94);
       background: rgba(255, 255, 255, 0.16);
       pointer-events: none;
       z-index: 4;
     }
 
-    /* Async Puzzle Generator Overlay */
-    .board-loading {
-      position: absolute;
-      inset: 0;
-      border-radius: 20px;
-      background: rgba(250, 246, 240, 0.88);
-      backdrop-filter: blur(4px);
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      z-index: 15;
-      font-weight: 700;
-      font-size: 0.88rem;
-      color: var(--text-primary);
-    }
-
-    [data-theme="dark"] .board-loading {
-      background: rgba(23, 20, 18, 0.88);
-    }
-
-    .board-loading.visible { display: flex; }
-
-    .spinner {
-      width: 34px;
-      height: 34px;
-      border: 3.5px solid var(--accent-soft);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.75s linear infinite;
-    }
-
     /* ==========================================================================
-       BOTTOM ACTION BAR (Undo, Auto-X, Hint, Clear, New)
+       BOTTOM ACTION BAR (Undo, Clear, Auto-X, Hint, New)
        ========================================================================== */
     .controls-grid {
       display: grid;
@@ -729,6 +756,32 @@
     .ctrl-btn.primary-ctrl:hover { background: var(--accent-hover); }
 
     /* ==========================================================================
+       FOOTER WITH Meowdoku v1.3 & BEST TIME
+       ========================================================================== */
+    .app-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 2px 4px 0;
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .footer-version {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .footer-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--success);
+    }
+
+    /* ==========================================================================
        MODALS (HOW TO PLAY, OUT OF FISH, VICTORY)
        ========================================================================== */
     .modal-backdrop {
@@ -778,7 +831,7 @@
 
     .modal-header h2 {
       font-family: 'Fredoka', sans-serif;
-      font-size: 1.35rem;
+      font-size: 1.32rem;
       font-weight: 700;
     }
 
@@ -796,7 +849,7 @@
       background: var(--bg-surface-soft);
       padding: 10px 12px;
       border-radius: 14px;
-      font-size: 0.82rem;
+      font-size: 0.81rem;
       line-height: 1.4;
     }
 
@@ -818,14 +871,14 @@
     .rule-item p {
       color: var(--text-secondary);
       margin-top: 2px;
-      font-size: 0.76rem;
+      font-size: 0.75rem;
     }
 
     .controls-tip-box {
       background: var(--accent-soft);
       border-radius: 14px;
       padding: 10px 12px;
-      font-size: 0.76rem;
+      font-size: 0.75rem;
       color: var(--text-primary);
       line-height: 1.45;
       margin-bottom: 16px;
@@ -882,13 +935,13 @@
 
     .modal-hero-title {
       font-family: 'Fredoka', sans-serif;
-      font-size: 1.62rem;
+      font-size: 1.58rem;
       margin-bottom: 5px;
     }
 
     .modal-hero-sub {
       color: var(--text-secondary);
-      font-size: 0.85rem;
+      font-size: 0.84rem;
       margin-bottom: 16px;
       line-height: 1.45;
     }
@@ -907,14 +960,14 @@
     }
 
     .v-stat-val {
-      font-size: 1.05rem;
+      font-size: 1.02rem;
       font-weight: 800;
       color: var(--text-primary);
       font-variant-numeric: tabular-nums;
     }
 
     .v-stat-lbl {
-      font-size: 0.67rem;
+      font-size: 0.66rem;
       font-weight: 600;
       color: var(--text-muted);
       margin-top: 2px;
@@ -930,12 +983,8 @@
     }
 
     /* ==========================================================================
-       ANIMATIONS
+       KEYFRAME ANIMATIONS
        ========================================================================== */
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
     @keyframes markPop {
       0% { transform: scale(0.35); opacity: 0; }
       100% { transform: scale(1); opacity: 1; }
@@ -982,10 +1031,10 @@
       65% { transform: scale(0.84) rotate(10deg); }
     }
 
-    @media (max-height: 700px) {
+    @media (max-height: 720px) {
       body { padding: 6px 10px 10px; }
       .app-shell { gap: 6px; }
-      .board-card { max-width: 392px; padding: 6px; }
+      .board-card { max-width: 380px; padding: 6px; }
       .ctrl-btn { padding: 8px 3px; }
     }
   </style>
@@ -994,7 +1043,7 @@
   <canvas id="confettiCanvas"></canvas>
 
   <main class="app-shell">
-    <!-- TOP HEADER -->
+    <!-- TOP HEADER WITH GREEN v1.3 PILL BADGE -->
     <header class="header">
       <div class="brand">
         <div class="brand-icon" aria-hidden="true">
@@ -1009,7 +1058,7 @@
         <div class="brand-text">
           <div class="brand-title-row">
             <h1>Meowdoku</h1>
-            <span class="level-pill" id="levelBadge">Level 1</span>
+            <span class="version-badge" title="Current Build Version">v1.3</span>
           </div>
           <span class="brand-subtitle" id="puzzleSubtitle">8×8 · Pure Logic · Unique Solution</span>
         </div>
@@ -1028,64 +1077,74 @@
       </div>
     </header>
 
-    <!-- BOARD SIZE TABS (6x6 to 10x10, default 8x8) -->
-    <nav class="size-bar" aria-label="Board Size">
-      <button class="size-btn" data-size="6">6×6</button>
-      <button class="size-btn" data-size="7">7×7</button>
-      <button class="size-btn active" data-size="8">8×8</button>
-      <button class="size-btn" data-size="9">9×9</button>
-      <button class="size-btn" data-size="10">10×10</button>
+    <!-- SIZE SELECTOR TABS (6x6 to 10x10 + Daily) -->
+    <nav class="mode-bar" aria-label="Board Size and Mode">
+      <button class="mode-btn" data-mode="6">6×6</button>
+      <button class="mode-btn" data-mode="7">7×7</button>
+      <button class="mode-btn active" data-mode="8">8×8</button>
+      <button class="mode-btn" data-mode="9">9×9</button>
+      <button class="mode-btn" data-mode="10">10×10</button>
+      <button class="mode-btn daily-btn" data-mode="daily">Daily</button>
     </nav>
 
-    <!-- STATUS STRIP (Cat Counter, 3 Fish Lives, Timer, Solved) -->
+    <!-- STATS BAR (Cat Counter, 3 Fish Lives, Level, Timer, Mistakes) -->
     <section class="status-strip" aria-label="Game Status">
-      <div class="cat-counter-pill" title="Cats Found">
-        <svg viewBox="0 0 64 64" aria-hidden="true">
-          <path d="M13 26 L10 9 L25 17 C29 15.8 35 15.8 39 17 L54 9 L51 26 C54 31 55 38 52 44 C49 52 41 56 32 56 C23 56 15 52 12 44 C9 38 10 31 13 26 Z" fill="#2E2623"/>
-          <path d="M16 40 C16 32 22 27 32 27 C42 27 48 32 48 40 C48 49 41 54 32 54 C23 54 16 49 16 40 Z" fill="#FFFFFF"/>
-          <circle cx="24" cy="36" r="3.4" fill="#2E2623"/>
-          <circle cx="40" cy="36" r="3.4" fill="#2E2623"/>
-          <circle cx="25" cy="34.8" r="1.1" fill="#FFFFFF"/>
-          <circle cx="41" cy="34.8" r="1.1" fill="#FFFFFF"/>
-          <path d="M29.5 41 L34.5 41 L32 43.8 Z" fill="#F28482"/>
-        </svg>
-        <span><span class="cat-count-num" id="catFoundNum">0</span> / <span id="catTotalNum">8</span></span>
+      <div class="status-left">
+        <div class="cat-counter-pill" title="Cats Found">
+          <svg viewBox="0 0 64 64" aria-hidden="true">
+            <path d="M13 26 L10 9 L25 17 C29 15.8 35 15.8 39 17 L54 9 L51 26 C54 31 55 38 52 44 C49 52 41 56 32 56 C23 56 15 52 12 44 C9 38 10 31 13 26 Z" fill="#2E2623"/>
+            <path d="M16 40 C16 32 22 27 32 27 C42 27 48 32 48 40 C48 49 41 54 32 54 C23 54 16 49 16 40 Z" fill="#FFFFFF"/>
+            <circle cx="24" cy="36" r="3.4" fill="#2E2623"/>
+            <circle cx="40" cy="36" r="3.4" fill="#2E2623"/>
+            <circle cx="25" cy="34.8" r="1.1" fill="#FFFFFF"/>
+            <circle cx="41" cy="34.8" r="1.1" fill="#FFFFFF"/>
+            <path d="M29.5 41 L34.5 41 L32 43.8 Z" fill="#F28482"/>
+          </svg>
+          <span><span class="cat-count-num" id="catFoundNum">0</span>/<span id="catTotalNum">8</span></span>
+        </div>
+
+        <div class="fish-lives" id="fishLives" aria-label="Fish Lives Remaining" title="3 Fish Lives"></div>
       </div>
 
-      <div class="fish-lives" id="fishLives" aria-label="Fish Lives Remaining" title="3 Fish Lives"></div>
-
       <div class="mini-stats">
+        <div class="mini-stat">
+          <span class="mini-stat-lbl">Level</span>
+          <span class="mini-stat-val" id="levelDisplay">1</span>
+        </div>
         <div class="mini-stat">
           <span class="mini-stat-lbl">Time</span>
           <span class="mini-stat-val" id="timerDisplay">00:00</span>
         </div>
         <div class="mini-stat">
-          <span class="mini-stat-lbl">Solved</span>
-          <span class="mini-stat-val" id="solvedDisplay">0</span>
+          <span class="mini-stat-lbl">Mistakes</span>
+          <span class="mini-stat-val" id="mistakesDisplay">0</span>
         </div>
       </div>
     </section>
 
-    <!-- COMPACT 3-PART RULES STRIP -->
+    <!-- COMPACT 3-RULE STRIP -->
     <section class="rules-strip" aria-label="Quick Rules">
       <div class="rule-pill">
-        <span class="rule-pill-dot" style="background:#38A3B8;"></span>
+        <span class="rule-pill-dot" style="background:#3AA6B9;"></span>
         <span>1 Cat per color</span>
       </div>
       <div class="rule-pill">
-        <span class="rule-pill-dot" style="background:#F48FB1;"></span>
+        <span class="rule-pill-dot" style="background:#F699CD;"></span>
         <span>1 Cat per row &amp; col</span>
       </div>
       <div class="rule-pill">
-        <span class="rule-pill-dot" style="background:#F59B56;"></span>
-        <span>Cats cannot touch</span>
+        <span class="rule-pill-dot" style="background:#FFA95E;"></span>
+        <span>Cats cannot touch (even diagonally)</span>
       </div>
     </section>
 
-    <!-- HINT / WARNING / STATUS BANNER -->
+    <!-- INSTRUCTION / HINT / WARNING BANNER -->
     <div class="banner-slot">
       <div class="status-banner" id="statusBanner">
-        <span id="statusText">Tap once for ✕, tap again to place a Cat. Drag to mark ✕!</span>
+        <div class="banner-body">
+          <span class="hint-rule-tag" id="hintRuleTag" style="display:none;"></span>
+          <span id="statusText">Single tap or drag for ✕ • Quick double-tap to place a Cat 🐱</span>
+        </div>
         <div class="banner-actions">
           <button class="banner-apply-btn" id="btnApplyHint" style="display:none;">Apply</button>
           <button class="banner-close" id="btnCloseBanner" style="display:none;" aria-label="Dismiss">&times;</button>
@@ -1096,13 +1155,9 @@
     <!-- ROUNDED TILE GAME BOARD -->
     <section class="board-card">
       <div class="board-grid size-8" id="boardGrid" role="grid" aria-label="Meowdoku Board"></div>
-      <div class="board-loading" id="boardLoading">
-        <div class="spinner"></div>
-        <span id="loadingLabel">Generating logical puzzle...</span>
-      </div>
     </section>
 
-    <!-- BOTTOM ACTION BAR -->
+    <!-- BOTTOM ACTION BAR (Undo, Clear, Auto-X, Hint, New) -->
     <section class="controls-grid" aria-label="Game Controls">
       <button class="ctrl-btn" id="btnUndo" disabled>
         <svg viewBox="0 0 24 24">
@@ -1110,6 +1165,15 @@
           <path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>
         </svg>
         <span>Undo</span>
+      </button>
+
+      <button class="ctrl-btn" id="btnClear" title="Clear non-locked ✕ marks">
+        <svg viewBox="0 0 24 24">
+          <path d="M3 6h18"/>
+          <path d="M8 6V4h8v2"/>
+          <path d="M19 6l-1 14H6L5 6"/>
+        </svg>
+        <span>Clear</span>
       </button>
 
       <button class="ctrl-btn toggle-on" id="btnAutoX" aria-pressed="true">
@@ -1128,15 +1192,6 @@
         <span>Hint</span>
       </button>
 
-      <button class="ctrl-btn" id="btnClear">
-        <svg viewBox="0 0 24 24">
-          <path d="M3 6h18"/>
-          <path d="M8 6V4h8v2"/>
-          <path d="M19 6l-1 14H6L5 6"/>
-        </svg>
-        <span>Clear</span>
-      </button>
-
       <button class="ctrl-btn primary-ctrl" id="btnNew">
         <svg viewBox="0 0 24 24">
           <path d="M21 12a9 9 0 1 1-2.64-6.36"/>
@@ -1145,6 +1200,15 @@
         <span>New</span>
       </button>
     </section>
+
+    <!-- FOOTER WITH Meowdoku v1.3 & BEST TIME -->
+    <footer class="app-footer">
+      <span class="footer-version">
+        <span class="footer-dot"></span>
+        <span>Meowdoku <strong>v1.3</strong></span>
+      </span>
+      <span id="footerBest">Best: --:-- · Solved: 0</span>
+    </footer>
   </main>
 
   <!-- HOW TO PLAY MODAL -->
@@ -1180,19 +1244,20 @@
           </div>
         </div>
         <div class="rule-item">
-          <div class="rule-badge">🐟</div>
+          <div class="rule-badge">🐠</div>
           <div>
             <strong>3 Fish Lives &amp; Wrong-Cat Guard</strong>
-            <p>Wrong cat placements are automatically blocked and cost 1 Fish Life. Confirmed cats stay safely locked!</p>
+            <p>Wrong cat placements are blocked instantly and cost 1 Fish Life. Confirmed cats stay safely locked!</p>
           </div>
         </div>
       </div>
 
       <div class="controls-tip-box">
-        <strong>Controls:</strong><br/>
-        • <strong>Tap 1×</strong> to mark ✕ · <strong>Tap 2×</strong> to place a Cat.<br/>
-        • <strong>Press &amp; drag</strong> across tiles to smoothly mark or erase multiple ✕.<br/>
-        • <strong>Hint (💡)</strong> shows a real logical deduction with a 1-tap <strong>Apply</strong> button.
+        <strong>Controls &amp; Smart Hints (v1.3):</strong><br/>
+        • <strong>Single tap</strong> any tile to toggle ✕ immediately with zero lag.<br/>
+        • <strong>Quick double-tap</strong> (within 320ms) to place a Cat 🐱.<br/>
+        • <strong>Drag across tiles</strong> to smoothly mark or erase multiple ✕.<br/>
+        • <strong>Hint (💡)</strong> runs a 9-rule logical solver (Naked Singles, Pointing, Touching, Pairs/Triples/Quads, and 1-Step Contradictions) with 1-tap <strong>Apply</strong>.
       </div>
 
       <button class="btn-full" id="btnGotIt">Got It, Let's Play!</button>
@@ -1210,7 +1275,7 @@
         </svg>
       </div>
       <h2 class="modal-hero-title" id="oofTitle">Out of Fish!</h2>
-      <p class="modal-hero-sub">All 3 fish lives have been used on this board. Would you like to refill 1 fish and continue, or retry this puzzle fresh?</p>
+      <p class="modal-hero-sub">All 3 fish lives have been used on this board. Would you like to refill 1 fish and continue, or retry this board fresh?</p>
       <button class="btn-full" id="btnRefillFish">Refill 1 Fish &amp; Continue</button>
       <button class="btn-full btn-secondary" id="btnRetryBoard">Retry This Board</button>
     </div>
@@ -1233,16 +1298,16 @@
 
       <div class="victory-stats">
         <div class="v-stat">
-          <div class="v-stat-val" id="vLevel">1</div>
-          <div class="v-stat-lbl">Level</div>
-        </div>
-        <div class="v-stat">
           <div class="v-stat-val" id="vTime">00:00</div>
           <div class="v-stat-lbl">Time</div>
         </div>
         <div class="v-stat">
-          <div class="v-stat-val" id="vFish">3 / 3</div>
-          <div class="v-stat-lbl">Fish Left</div>
+          <div class="v-stat-val" id="vMistakes">0</div>
+          <div class="v-stat-lbl">Mistakes</div>
+        </div>
+        <div class="v-stat">
+          <div class="v-stat-val" id="vBest">00:00</div>
+          <div class="v-stat-lbl">Best</div>
         </div>
       </div>
 
@@ -1256,19 +1321,19 @@
       'use strict';
 
       /* ==========================================================================
-         AUTHENTIC MEOWDOKU COLOR PALETTE + EMBOSSED SVG TILE PATTERNS
+         11 AUTHENTIC MEOWDOKU COLORS + EMBOSSED INLINE SVG TILE PATTERNS
          ========================================================================== */
       const REGION_PALETTE = [
         {
           name: 'Teal',
-          color: '#38A3B8',
+          color: '#3AA6B9',
           dark: '#2A7C8C',
           pattern: `<path d="M12 20V11M12 12C12 8 7.5 6 5 7.5C5.5 11.5 8.5 13 12 12ZM12 12C12 8 16.5 6 19 7.5C18.5 11.5 15.5 13 12 12Z" fill="currentColor" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>`
         },
         {
           name: 'Pink',
-          color: '#F48FB1',
-          dark: '#B85A7C',
+          color: '#F699CD',
+          dark: '#B85A8E',
           pattern: `<path d="M4 9l4 1.5M3.5 13h4.5M4.5 16.5l3.5-1M20 9l-4 1.5M20.5 13H16M19.5 16.5l-3.5-1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M10 12.2c0-1 1.2-1.4 2-.5.8-.9 2-.5 2 .5 0 1.4-2 2.6-2 2.6s-2-1.2-2-2.6z" fill="currentColor"/>`
         },
         {
@@ -1279,1085 +1344,118 @@
         },
         {
           name: 'Light Green',
-          color: '#81C784',
-          dark: '#4D8E50',
+          color: '#8CE08A',
+          dark: '#4D944C',
           pattern: `<path d="M7.5 6l2.8 4.8H4.7L7.5 6zm9 0l2.8 4.8h-5.6L16.5 6zm-9 8l2.8 4.8H4.7L7.5 14zm9 0l2.8 4.8h-5.6L16.5 14z" fill="currentColor"/>`
         },
         {
           name: 'Rose',
-          color: '#C8647D',
-          dark: '#964056',
+          color: '#D16B86',
+          dark: '#96425A',
           pattern: `<path d="M12 4.5a5.5 5.5 0 0 0-5.5 5.5v3.5L5 16h14l-1.5-2.5V10A5.5 5.5 0 0 0 12 4.5zM10 17.5a2 2 0 0 0 4 0h-4z" fill="currentColor"/>`
         },
         {
           name: 'Dark Green',
-          color: '#2E8B57',
+          color: '#2D8A57',
           dark: '#1F633D',
           pattern: `<circle cx="7.5" cy="9.5" r="2" fill="currentColor"/><circle cx="12" cy="7.5" r="2.1" fill="currentColor"/><circle cx="16.5" cy="9.5" r="2" fill="currentColor"/><path d="M12 12c-3 0-5 2.1-4.5 4.3.4 1.6 2 2.2 4.5 1.8 2.5.4 4.1-.2 4.5-1.8.5-2.2-1.5-4.3-4.5-4.3z" fill="currentColor"/>`
         },
         {
           name: 'Yellow',
-          color: '#F6D576',
-          dark: '#B89635',
+          color: '#FDE073',
+          dark: '#B89B32',
           pattern: `<path d="M4.5 8.5l7.5 3.5-7.5 3.5v-7zm15 0L12 12l7.5 3.5v-7z" fill="currentColor"/><circle cx="12" cy="12" r="2.2" fill="currentColor"/>`
         },
         {
           name: 'Brown',
-          color: '#A87650',
-          dark: '#7A5234',
+          color: '#9C6B43',
+          dark: '#734C2D',
           pattern: `<circle cx="7" cy="7" r="2.1" fill="currentColor"/><circle cx="12" cy="7" r="2.1" fill="currentColor"/><circle cx="17" cy="7" r="2.1" fill="currentColor"/><circle cx="7" cy="12" r="2.1" fill="currentColor"/><circle cx="12" cy="12" r="2.1" fill="currentColor"/><circle cx="17" cy="12" r="2.1" fill="currentColor"/><circle cx="7" cy="17" r="2.1" fill="currentColor"/><circle cx="12" cy="17" r="2.1" fill="currentColor"/><circle cx="17" cy="17" r="2.1" fill="currentColor"/>`
         },
         {
-          name: 'Peach',
-          color: '#F59B56',
-          dark: '#B86A2E',
-          pattern: `<path d="M8 6.5c-1.4 0-2.5 1.1-2.5 2.4 0 2.3 4 4.6 4 4.6s4-2.3 4-4.6c0-1.3-1.1-2.4-2.5-2.4-.8 0-1.5.4-1.5 1 0-.6-.7-1-1.5-1zm7.5 6.5c-1.1 0-2 .9-2 1.9 0 1.8 3.2 3.6 3.2 3.6s3.2-1.8 3.2-3.6c0-1-.9-1.9-2-1.9-.6 0-1.2.3-1.2.8 0-.5-.6-.8-1.2-.8z" fill="currentColor"/>`
-        },
-        {
-          name: 'Olive',
-          color: '#C9A218',
-          dark: '#91740C',
+          name: 'Orange',
+          color: '#FFA95E',
+          dark: '#BA6E2C',
           pattern: `<path d="M6.5 18c1.2-5 3.5-9.5 6.5-12M11 18.5c1.2-4.8 3.2-9 6-11.5M15.5 18.5c1-3.5 2.3-6.5 4-8.5" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/>`
         },
         {
-          name: 'Sky Blue',
-          color: '#8FBCE6',
-          dark: '#5280AD',
+          name: 'Olive',
+          color: '#C8A200',
+          dark: '#8F7300',
           pattern: `<circle cx="12" cy="12" r="7.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6.5 9c3.5 0 7.5 2.5 9.5 7.5M9 5.5c2 3.5 2.5 8 1 13.5M16 6.5c-4 1-7.5 4.5-9.5 8.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>`
+        },
+        {
+          name: 'Sky Blue',
+          color: '#9BC4E2',
+          dark: '#5280AD',
+          pattern: `<path d="M8.5 7.5c0-1.3 1.4-2 2.5-1 1.1-1 2.5-.3 2.5 1 0 1.8-2.5 3.3-2.5 3.3S8.5 9.3 8.5 7.5zm4.5 6.5c0-1.1 1.2-1.7 2.1-.8.9-.9 2.1-.3 2.1.8 0 1.5-2.1 2.8-2.1 2.8S13 15.5 13 14zM5.8 14.2c0-1 1.1-1.5 1.9-.7.8-.8 1.9-.3 1.9.7 0 1.4-1.9 2.5-1.9 2.5s-1.9-1.1-1.9-2.5z" fill="currentColor"/>`
         }
       ];
 
-      // Cell States
+      /* ==========================================================================
+         CONSTANTS & STORAGE KEYS
+         ========================================================================== */
       const EMPTY = 0;
       const MANUAL_X = 1;
       const CAT = 2;
       const AUTO_X = 3;
 
       const MAX_LIVES = 3;
-      const STORAGE_KEY = 'meowdoku_authentic_v1';
+      const DOUBLE_TAP_MS = 320;
+      const GEN_BUDGET_MS = 115;
 
-      function loadStorage() {
-        try {
-          const raw = localStorage.getItem(STORAGE_KEY);
-          if (raw) return JSON.parse(raw);
-        } catch (_) {}
-        return {
-          theme: 'light',
-          muted: false,
-          autoX: true,
-          level: 1,
-          solvedTotal: 0,
-          boardSize: 8
-        };
-      }
+      const PREFS_KEY = 'meowdoku_v1_3_prefs';
+      const STATE_KEY = 'meowdoku_v1_3_state';
 
-      function saveStorage() {
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
-        } catch (_) {}
-      }
-
-      const prefs = loadStorage();
+      const DEFAULT_BANNER_TEXT = 'Single tap or drag for ✕ • Quick double-tap to place a Cat 🐱';
 
       /* ==========================================================================
-         WEB AUDIO API SOUND SYNTHESIZER
+         PREFERENCES & PERSISTENCE
          ========================================================================== */
-      let audioCtx = null;
-
-      function getAudioCtx() {
-        if (prefs.muted) return null;
-        if (!audioCtx) {
-          const Ctx = window.AudioContext || window.webkitAudioContext;
-          if (Ctx) audioCtx = new Ctx();
-        }
-        if (audioCtx && audioCtx.state === 'suspended') {
-          audioCtx.resume().catch(() => {});
-        }
-        return audioCtx;
-      }
-
-      const Sound = {
-        pop(pitch = 430) {
-          const ctx = getAudioCtx();
-          if (!ctx) return;
-          const now = ctx.currentTime;
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(pitch, now);
-          osc.frequency.exponentialRampToValueAtTime(pitch * 0.58, now + 0.055);
-          gain.gain.setValueAtTime(0.075, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(now);
-          osc.stop(now + 0.065);
-        },
-
-        catPurr() {
-          const ctx = getAudioCtx();
-          if (!ctx) return;
-          const now = ctx.currentTime;
-          [523.25, 659.25].forEach((freq, idx) => {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'sine';
-            const t = now + idx * 0.055;
-            osc.frequency.setValueAtTime(freq, t);
-            osc.frequency.exponentialRampToValueAtTime(freq * 1.05, t + 0.14);
-            gain.gain.setValueAtTime(0.001, t);
-            gain.gain.linearRampToValueAtTime(0.11, t + 0.015);
-            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start(t);
-            osc.stop(t + 0.19);
-          });
-        },
-
-        errorBuzz() {
-          const ctx = getAudioCtx();
-          if (!ctx) return;
-          const now = ctx.currentTime;
-          [0, 0.11].forEach((offset) => {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'sawtooth';
-            const t = now + offset;
-            osc.frequency.setValueAtTime(175, t);
-            osc.frequency.linearRampToValueAtTime(125, t + 0.085);
-            gain.gain.setValueAtTime(0.001, t);
-            gain.gain.linearRampToValueAtTime(0.07, t + 0.012);
-            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.095);
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start(t);
-            osc.stop(t + 0.1);
-          });
-        },
-
-        hint() {
-          const ctx = getAudioCtx();
-          if (!ctx) return;
-          const now = ctx.currentTime;
-          [440, 587.33].forEach((freq, idx) => {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'triangle';
-            const t = now + idx * 0.065;
-            osc.frequency.setValueAtTime(freq, t);
-            gain.gain.setValueAtTime(0.08, t);
-            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start(t);
-            osc.stop(t + 0.2);
-          });
-        },
-
-        victory() {
-          const ctx = getAudioCtx();
-          if (!ctx) return;
-          const now = ctx.currentTime;
-          [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'sine';
-            const t = now + i * 0.095;
-            osc.frequency.setValueAtTime(freq, t);
-            gain.gain.setValueAtTime(0.001, t);
-            gain.gain.linearRampToValueAtTime(0.13, t + 0.02);
-            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.42);
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start(t);
-            osc.stop(t + 0.45);
-          });
-        }
+      const defaultPrefs = {
+        theme: window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
+        muted: false,
+        autoX: true,
+        mode: '8',
+        levelsByMode: { '6': 1, '7': 1, '8': 1, '9': 1, '10': 1, daily: 1 },
+        solvedTotal: 0,
+        bestTimes: {}
       };
 
-      /* ==========================================================================
-         FAST PRNG HELPERS
-         ========================================================================== */
-      function createRng(seed) {
-        let a = seed >>> 0;
-        return function rng() {
-          a |= 0;
-          a = (a + 0x6D2B79F5) | 0;
-          let t = Math.imul(a ^ (a >>> 15), 1 | a);
-          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      let prefs = loadPrefs();
+
+      function loadPrefs() {
+        try {
+          const raw = localStorage.getItem(PREFS_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            return {
+              ...defaultPrefs,
+              ...parsed,
+              levelsByMode: { ...defaultPrefs.levelsByMode, ...(parsed.levelsByMode || {}) },
+              bestTimes: { ...(parsed.bestTimes || {}) }
+            };
+          }
+        } catch (_) {}
+        return {
+          ...defaultPrefs,
+          levelsByMode: { ...defaultPrefs.levelsByMode },
+          bestTimes: {}
         };
       }
 
-      function shuffle(arr, rng) {
-        for (let i = arr.length - 1; i > 0; i--) {
-          const j = Math.floor(rng() * (i + 1));
-          [arr[i], arr[j]] = [arr[j], arr[i]];
-        }
-        return arr;
+      function savePrefs() {
+        try {
+          localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+        } catch (_) {}
       }
 
       /* ==========================================================================
-         8-RULE GENUINE HUMAN DEDUCTIVE HINT ENGINE (ZERO FAKE SPOILERS)
-         Shared by both the Hint button and the Generator's Human-Solvable Check.
-         ========================================================================== */
-      function formatCell(r, c) {
-        return `Row ${r + 1}, Col ${c + 1}`;
-      }
-
-      function formatCellList(cells) {
-        if (cells.length === 1) return formatCell(cells[0][0], cells[0][1]);
-        if (cells.length === 2) return `${formatCell(cells[0][0], cells[0][1])} & ${formatCell(cells[1][0], cells[1][1])}`;
-        return `${formatCell(cells[0][0], cells[0][1])} (+${cells.length - 1} more)`;
-      }
-
-      function findNextLogicalStep(N, regions, board, palette) {
-        const regName = (id) => palette ? palette[id].name : `Color ${id + 1}`;
-        const placedCats = [];
-        const solvedRow = new Array(N).fill(false);
-        const solvedCol = new Array(N).fill(false);
-        const solvedReg = new Array(N).fill(false);
-
-        for (let r = 0; r < N; r++) {
-          for (let c = 0; c < N; c++) {
-            if (board[r][c] === CAT) {
-              placedCats.push([r, c]);
-              solvedRow[r] = true;
-              solvedCol[c] = true;
-              solvedReg[regions[r][c]] = true;
-            }
-          }
-        }
-
-        // ------------------------------------------------------------------
-        // RULE 2: Blocked by Already-Placed Cat
-        // ------------------------------------------------------------------
-        for (const [cr, cc] of placedCats) {
-          const catReg = regions[cr][cc];
-          const blocked = [];
-          for (let r = 0; r < N; r++) {
-            for (let c = 0; c < N; c++) {
-              if (board[r][c] !== EMPTY) continue;
-              if (r === cr || c === cc || regions[r][c] === catReg ||
-                  (Math.abs(r - cr) <= 1 && Math.abs(c - cc) <= 1)) {
-                blocked.push([r, c]);
-              }
-            }
-          }
-          if (blocked.length > 0) {
-            return {
-              rule: 2,
-              targets: blocked,
-              secondary: [[cr, cc]],
-              text: `${formatCellList(blocked)} must be ✕ because of the cat at ${formatCell(cr, cc)} (${regName(catReg)}).`,
-              action: { type: 'mark_x', cells: blocked }
-            };
-          }
-        }
-
-        // Gather open (EMPTY) candidates per Row, Col, and Region
-        const rowCands = Array.from({ length: N }, () => []);
-        const colCands = Array.from({ length: N }, () => []);
-        const regCands = Array.from({ length: N }, () => []);
-        const allEmpty = [];
-
-        for (let r = 0; r < N; r++) {
-          for (let c = 0; c < N; c++) {
-            if (board[r][c] === EMPTY) {
-              const cell = [r, c];
-              allEmpty.push(cell);
-              rowCands[r].push(cell);
-              colCands[c].push(cell);
-              regCands[regions[r][c]].push(cell);
-            }
-          }
-        }
-
-        // ------------------------------------------------------------------
-        // RULE 3: Naked Single (Only 1 Open Cell Left in Color / Row / Col)
-        // ------------------------------------------------------------------
-        for (let reg = 0; reg < N; reg++) {
-          if (!solvedReg[reg] && regCands[reg].length === 1) {
-            const [r, c] = regCands[reg][0];
-            return {
-              rule: 3,
-              targets: [[r, c]],
-              secondary: [],
-              text: `Only one spot remains in ${regName(reg)} — place a cat at ${formatCell(r, c)}!`,
-              action: { type: 'place_cat', cells: [[r, c]] }
-            };
-          }
-        }
-        for (let r = 0; r < N; r++) {
-          if (!solvedRow[r] && rowCands[r].length === 1) {
-            const [tr, tc] = rowCands[r][0];
-            return {
-              rule: 3,
-              targets: [[tr, tc]],
-              secondary: [],
-              text: `Only one spot remains in Row ${r + 1} — place a cat at ${formatCell(tr, tc)}!`,
-              action: { type: 'place_cat', cells: [[tr, tc]] }
-            };
-          }
-        }
-        for (let c = 0; c < N; c++) {
-          if (!solvedCol[c] && colCands[c].length === 1) {
-            const [tr, tc] = colCands[c][0];
-            return {
-              rule: 3,
-              targets: [[tr, tc]],
-              secondary: [],
-              text: `Only one spot remains in Col ${c + 1} — place a cat at ${formatCell(tr, tc)}!`,
-              action: { type: 'place_cat', cells: [[tr, tc]] }
-            };
-          }
-        }
-
-        // ------------------------------------------------------------------
-        // RULE 4: Region-to-Line Pointing
-        // ------------------------------------------------------------------
-        for (let reg = 0; reg < N; reg++) {
-          if (solvedReg[reg] || regCands[reg].length < 2) continue;
-
-          const rowsInReg = new Set(regCands[reg].map(([r]) => r));
-          if (rowsInReg.size === 1) {
-            const onlyRow = [...rowsInReg][0];
-            const elims = rowCands[onlyRow].filter(([r, c]) => regions[r][c] !== reg);
-            if (elims.length > 0) {
-              return {
-                rule: 4,
-                targets: elims,
-                secondary: regCands[reg],
-                text: `All open ${regName(reg)} tiles are in Row ${onlyRow + 1}, claiming Row ${onlyRow + 1}'s cat — mark ${formatCellList(elims)} as ✕!`,
-                action: { type: 'mark_x', cells: elims }
-              };
-            }
-          }
-
-          const colsInReg = new Set(regCands[reg].map(([, c]) => c));
-          if (colsInReg.size === 1) {
-            const onlyCol = [...colsInReg][0];
-            const elims = colCands[onlyCol].filter(([r, c]) => regions[r][c] !== reg);
-            if (elims.length > 0) {
-              return {
-                rule: 4,
-                targets: elims,
-                secondary: regCands[reg],
-                text: `All open ${regName(reg)} tiles are in Col ${onlyCol + 1}, claiming Col ${onlyCol + 1}'s cat — mark ${formatCellList(elims)} as ✕!`,
-                action: { type: 'mark_x', cells: elims }
-              };
-            }
-          }
-        }
-
-        // ------------------------------------------------------------------
-        // RULE 5: Line-to-Region Pointing
-        // ------------------------------------------------------------------
-        for (let r = 0; r < N; r++) {
-          if (solvedRow[r] || rowCands[r].length < 2) continue;
-          const regsInRow = new Set(rowCands[r].map(([rr, cc]) => regions[rr][cc]));
-          if (regsInRow.size === 1) {
-            const onlyReg = [...regsInRow][0];
-            const elims = regCands[onlyReg].filter(([rr]) => rr !== r);
-            if (elims.length > 0) {
-              return {
-                rule: 5,
-                targets: elims,
-                secondary: rowCands[r],
-                text: `All open tiles in Row ${r + 1} belong to ${regName(onlyReg)}, claiming its cat — mark ${formatCellList(elims)} as ✕!`,
-                action: { type: 'mark_x', cells: elims }
-              };
-            }
-          }
-        }
-
-        for (let c = 0; c < N; c++) {
-          if (solvedCol[c] || colCands[c].length < 2) continue;
-          const regsInCol = new Set(colCands[c].map(([rr, cc]) => regions[rr][cc]));
-          if (regsInCol.size === 1) {
-            const onlyReg = [...regsInCol][0];
-            const elims = regCands[onlyReg].filter(([, cc]) => cc !== c);
-            if (elims.length > 0) {
-              return {
-                rule: 5,
-                targets: elims,
-                secondary: colCands[c],
-                text: `All open tiles in Col ${c + 1} belong to ${regName(onlyReg)}, claiming its cat — mark ${formatCellList(elims)} as ✕!`,
-                action: { type: 'mark_x', cells: elims }
-              };
-            }
-          }
-        }
-
-        // ------------------------------------------------------------------
-        // RULE 6: Common Neighbor (Touching) Elimination
-        // ------------------------------------------------------------------
-        const groups = [];
-        for (let reg = 0; reg < N; reg++) {
-          if (!solvedReg[reg] && regCands[reg].length >= 2 && regCands[reg].length <= 6) {
-            groups.push({ type: 'reg', id: reg, label: regName(reg), cells: regCands[reg] });
-          }
-        }
-        for (let r = 0; r < N; r++) {
-          if (!solvedRow[r] && rowCands[r].length >= 2 && rowCands[r].length <= 3) {
-            groups.push({ type: 'row', id: r, label: `Row ${r + 1}`, cells: rowCands[r] });
-          }
-        }
-        for (let c = 0; c < N; c++) {
-          if (!solvedCol[c] && colCands[c].length >= 2 && colCands[c].length <= 3) {
-            groups.push({ type: 'col', id: c, label: `Col ${c + 1}`, cells: colCands[c] });
-          }
-        }
-
-        for (const g of groups) {
-          const elims = [];
-          for (const [er, ec] of allEmpty) {
-            if (g.type === 'reg' && regions[er][ec] === g.id) continue;
-            if (g.type === 'row' && er === g.id) continue;
-            if (g.type === 'col' && ec === g.id) continue;
-
-            let touchesAll = true;
-            for (const [gr, gc] of g.cells) {
-              if (Math.abs(gr - er) > 1 || Math.abs(gc - ec) > 1) {
-                touchesAll = false;
-                break;
-              }
-            }
-            if (touchesAll) elims.push([er, ec]);
-          }
-          if (elims.length > 0) {
-            return {
-              rule: 6,
-              targets: elims,
-              secondary: g.cells,
-              text: `Every open spot in ${g.label} touches ${formatCellList(elims)}. A cat there would block all of ${g.label}, so mark ✕!`,
-              action: { type: 'mark_x', cells: elims }
-            };
-          }
-        }
-
-        // ------------------------------------------------------------------
-        // RULE 7: Naked Pairs (2 Colors in 2 Rows/Cols & 2 Rows/Cols in 2 Colors)
-        // ------------------------------------------------------------------
-        const unsolvedRegs = [];
-        for (let reg = 0; reg < N; reg++) {
-          if (!solvedReg[reg] && regCands[reg].length >= 2) unsolvedRegs.push(reg);
-        }
-
-        for (let i = 0; i < unsolvedRegs.length; i++) {
-          for (let j = i + 1; j < unsolvedRegs.length; j++) {
-            const rA = unsolvedRegs[i], rB = unsolvedRegs[j];
-            const combined = regCands[rA].concat(regCands[rB]);
-
-            const rowSet = new Set(combined.map(([r]) => r));
-            if (rowSet.size === 2) {
-              const [row1, row2] = [...rowSet].sort((a, b) => a - b);
-              const elims = rowCands[row1].concat(rowCands[row2])
-                .filter(([r, c]) => regions[r][c] !== rA && regions[r][c] !== rB);
-              if (elims.length > 0) {
-                return {
-                  rule: 7,
-                  targets: elims,
-                  secondary: combined,
-                  text: `${regName(rA)} & ${regName(rB)} are confined to Rows ${row1 + 1} & ${row2 + 1}, claiming both rows — mark ${formatCellList(elims)} as ✕!`,
-                  action: { type: 'mark_x', cells: elims }
-                };
-              }
-            }
-
-            const colSet = new Set(combined.map(([, c]) => c));
-            if (colSet.size === 2) {
-              const [col1, col2] = [...colSet].sort((a, b) => a - b);
-              const elims = colCands[col1].concat(colCands[col2])
-                .filter(([r, c]) => regions[r][c] !== rA && regions[r][c] !== rB);
-              if (elims.length > 0) {
-                return {
-                  rule: 7,
-                  targets: elims,
-                  secondary: combined,
-                  text: `${regName(rA)} & ${regName(rB)} are confined to Cols ${col1 + 1} & ${col2 + 1}, claiming both columns — mark ${formatCellList(elims)} as ✕!`,
-                  action: { type: 'mark_x', cells: elims }
-                };
-              }
-            }
-          }
-        }
-
-        const unsolvedRows = [];
-        for (let r = 0; r < N; r++) {
-          if (!solvedRow[r] && rowCands[r].length >= 2) unsolvedRows.push(r);
-        }
-        for (let i = 0; i < unsolvedRows.length; i++) {
-          for (let j = i + 1; j < unsolvedRows.length; j++) {
-            const rowA = unsolvedRows[i], rowB = unsolvedRows[j];
-            const combined = rowCands[rowA].concat(rowCands[rowB]);
-            const regSet = new Set(combined.map(([r, c]) => regions[r][c]));
-            if (regSet.size === 2) {
-              const [reg1, reg2] = [...regSet];
-              const elims = regCands[reg1].concat(regCands[reg2])
-                .filter(([r]) => r !== rowA && r !== rowB);
-              if (elims.length > 0) {
-                return {
-                  rule: 7,
-                  targets: elims,
-                  secondary: combined,
-                  text: `Rows ${rowA + 1} & ${rowB + 1} only appear in ${regName(reg1)} & ${regName(reg2)}, claiming both colors — mark ${formatCellList(elims)} as ✕!`,
-                  action: { type: 'mark_x', cells: elims }
-                };
-              }
-            }
-          }
-        }
-
-        const unsolvedCols = [];
-        for (let c = 0; c < N; c++) {
-          if (!solvedCol[c] && colCands[c].length >= 2) unsolvedCols.push(c);
-        }
-        for (let i = 0; i < unsolvedCols.length; i++) {
-          for (let j = i + 1; j < unsolvedCols.length; j++) {
-            const colA = unsolvedCols[i], colB = unsolvedCols[j];
-            const combined = colCands[colA].concat(colCands[colB]);
-            const regSet = new Set(combined.map(([r, c]) => regions[r][c]));
-            if (regSet.size === 2) {
-              const [reg1, reg2] = [...regSet];
-              const elims = regCands[reg1].concat(regCands[reg2])
-                .filter(([, c]) => c !== colA && c !== colB);
-              if (elims.length > 0) {
-                return {
-                  rule: 7,
-                  targets: elims,
-                  secondary: combined,
-                  text: `Cols ${colA + 1} & ${colB + 1} only appear in ${regName(reg1)} & ${regName(reg2)}, claiming both colors — mark ${formatCellList(elims)} as ✕!`,
-                  action: { type: 'mark_x', cells: elims }
-                };
-              }
-            }
-          }
-        }
-
-        // ------------------------------------------------------------------
-        // RULE 8: 1-Step What-If Contradiction
-        // ------------------------------------------------------------------
-        for (const [r, c] of allEmpty) {
-          const myReg = regions[r][c];
-          const isBlocked = (tr, tc) =>
-            tr === r || tc === c || regions[tr][tc] === myReg ||
-            (Math.abs(tr - r) <= 1 && Math.abs(tc - c) <= 1);
-
-          for (let reg = 0; reg < N; reg++) {
-            if (reg === myReg || solvedReg[reg] || regCands[reg].length === 0) continue;
-            if (!regCands[reg].some(([tr, tc]) => !isBlocked(tr, tc))) {
-              return {
-                rule: 8,
-                targets: [[r, c]],
-                secondary: regCands[reg],
-                text: `Placing a cat at ${formatCell(r, c)} would leave ${regName(reg)} with 0 valid spots — so ${formatCell(r, c)} must be ✕!`,
-                action: { type: 'mark_x', cells: [[r, c]] }
-              };
-            }
-          }
-
-          for (let rr = 0; rr < N; rr++) {
-            if (rr === r || solvedRow[rr] || rowCands[rr].length === 0) continue;
-            if (!rowCands[rr].some(([tr, tc]) => !isBlocked(tr, tc))) {
-              return {
-                rule: 8,
-                targets: [[r, c]],
-                secondary: rowCands[rr],
-                text: `Placing a cat at ${formatCell(r, c)} would leave Row ${rr + 1} with 0 valid spots — so ${formatCell(r, c)} must be ✕!`,
-                action: { type: 'mark_x', cells: [[r, c]] }
-              };
-            }
-          }
-
-          for (let cc = 0; cc < N; cc++) {
-            if (cc === c || solvedCol[cc] || colCands[cc].length === 0) continue;
-            if (!colCands[cc].some(([tr, tc]) => !isBlocked(tr, tc))) {
-              return {
-                rule: 8,
-                targets: [[r, c]],
-                secondary: colCands[cc],
-                text: `Placing a cat at ${formatCell(r, c)} would leave Col ${cc + 1} with 0 valid spots — so ${formatCell(r, c)} must be ✕!`,
-                action: { type: 'mark_x', cells: [[r, c]] }
-              };
-            }
-          }
-        }
-
-        return null;
-      }
-
-      /**
-       * Verifies an empty board (0/N) is 100% solvable purely by the 8 human rules.
-       */
-      function isHumanSolvable(N, regions) {
-        const simBoard = Array.from({ length: N }, () => new Array(N).fill(EMPTY));
-        let catsPlaced = 0;
-        const maxSteps = N * N + 30;
-
-        for (let step = 0; step < maxSteps; step++) {
-          if (catsPlaced === N) return true;
-          const deduction = findNextLogicalStep(N, regions, simBoard, null);
-          if (!deduction) return false;
-
-          if (deduction.action.type === 'place_cat') {
-            const [r, c] = deduction.action.cells[0];
-            simBoard[r][c] = CAT;
-            catsPlaced++;
-            const reg = regions[r][c];
-            for (let rr = 0; rr < N; rr++) {
-              for (let cc = 0; cc < N; cc++) {
-                if (simBoard[rr][cc] === EMPTY &&
-                    (rr === r || cc === c || regions[rr][cc] === reg ||
-                    (Math.abs(rr - r) <= 1 && Math.abs(cc - c) <= 1))) {
-                  simBoard[rr][cc] = AUTO_X;
-                }
-              }
-            }
-          } else if (deduction.action.type === 'mark_x') {
-            for (const [r, c] of deduction.action.cells) {
-              simBoard[r][c] = MANUAL_X;
-            }
-          }
-        }
-        return catsPlaced === N;
-      }
-
-      /* ==========================================================================
-         FAST MRV BACKTRACKING SOLVER (countSolutions <= limit)
-         ========================================================================== */
-      function countSolutions(regions, N, limit = 2) {
-        const regCells = Array.from({ length: N }, () => []);
-        for (let r = 0; r < N; r++) {
-          for (let c = 0; c < N; c++) {
-            regCells[regions[r][c]].push([r, c]);
-          }
-        }
-
-        const solutions = [];
-        const solCols = new Array(N).fill(-1);
-        const usedRow = new Uint8Array(N);
-        const usedCol = new Uint8Array(N);
-        const usedReg = new Uint8Array(N);
-
-        function canPlace(r, c) {
-          if (usedRow[r] || usedCol[c]) return false;
-          if (r > 0 && solCols[r - 1] !== -1 && Math.abs(solCols[r - 1] - c) <= 1) return false;
-          if (r < N - 1 && solCols[r + 1] !== -1 && Math.abs(solCols[r + 1] - c) <= 1) return false;
-          return true;
-        }
-
-        function solve(placed) {
-          if (placed === N) {
-            solutions.push(solCols.slice());
-            return;
-          }
-
-          // MRV: Pick unassigned region or row with the fewest valid placements
-          let bestList = null;
-          let bestLen = Infinity;
-
-          for (let reg = 0; reg < N; reg++) {
-            if (usedReg[reg]) continue;
-            const list = [];
-            const cells = regCells[reg];
-            for (let i = 0; i < cells.length; i++) {
-              const [r, c] = cells[i];
-              if (canPlace(r, c)) {
-                list.push([r, c]);
-                if (list.length >= bestLen) break;
-              }
-            }
-            if (list.length === 0) return; // Immediate dead-end prune
-            if (list.length < bestLen) {
-              bestLen = list.length;
-              bestList = list;
-              if (bestLen === 1) break;
-            }
-          }
-
-          if (bestLen > 1) {
-            for (let r = 0; r < N; r++) {
-              if (usedRow[r]) continue;
-              const list = [];
-              for (let c = 0; c < N; c++) {
-                if (!usedReg[regions[r][c]] && canPlace(r, c)) {
-                  list.push([r, c]);
-                  if (list.length >= bestLen) break;
-                }
-              }
-              if (list.length === 0) return;
-              if (list.length < bestLen) {
-                bestLen = list.length;
-                bestList = list;
-                if (bestLen === 1) break;
-              }
-            }
-          }
-
-          for (let i = 0; i < bestList.length; i++) {
-            const [r, c] = bestList[i];
-            const reg = regions[r][c];
-            solCols[r] = c;
-            usedRow[r] = 1;
-            usedCol[c] = 1;
-            usedReg[reg] = 1;
-
-            solve(placed + 1);
-
-            solCols[r] = -1;
-            usedRow[r] = 0;
-            usedCol[c] = 0;
-            usedReg[reg] = 0;
-
-            if (solutions.length >= limit) return;
-          }
-        }
-
-        solve(0);
-        return { count: solutions.length, solutions };
-      }
-
-      /* ==========================================================================
-         AUTHENTIC MEOWDOKU GENERATOR (Asymmetrical Anchor + Big Background)
-         ========================================================================== */
-      function generateCatPlacement(N, rng) {
-        const cols = new Array(N).fill(-1);
-        const usedCol = new Uint8Array(N);
-
-        function backtrack(r) {
-          if (r === N) return true;
-          const cands = [];
-          for (let c = 0; c < N; c++) {
-            if (usedCol[c]) continue;
-            if (r > 0 && Math.abs(c - cols[r - 1]) <= 1) continue;
-            cands.push(c);
-          }
-          shuffle(cands, rng);
-          for (const c of cands) {
-            cols[r] = c;
-            usedCol[c] = 1;
-            if (backtrack(r + 1)) return true;
-            usedCol[c] = 0;
-            cols[r] = -1;
-          }
-          return false;
-        }
-
-        backtrack(0);
-        return cols;
-      }
-
-      /**
-       * Creates authentic Meowdoku-style asymmetrical regions:
-       * - 1-2 Anchor regions (1-cell single or 2-3 cell straight line)
-       * - 1-2 Big Background regions (high growth weight wrapping around)
-       * - Organic 4-connected growth for all remaining regions
-       */
-      function growAuthenticRegions(N, catCols, rng) {
-        const grid = Array.from({ length: N }, () => new Array(N).fill(-1));
-        const sizes = new Array(N).fill(1);
-        const frontiers = Array.from({ length: N }, () => []);
-        const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-
-        // Seed each region with its solution cat cell
-        for (let r = 0; r < N; r++) {
-          grid[r][catCols[r]] = r;
-        }
-
-        const regOrder = shuffle(Array.from({ length: N }, (_, i) => i), rng);
-        const anchorCount = N >= 9 ? 2 : (N >= 7 && rng() < 0.7 ? 2 : 1);
-        const bgCount = N >= 9 ? 2 : 1;
-
-        const anchorSet = new Set(regOrder.slice(0, anchorCount));
-        const bgSet = new Set(regOrder.slice(anchorCount, anchorCount + bgCount));
-
-        // 1) Carve Anchor regions as either 1-cell single or 2-3 cell straight line
-        for (const reg of anchorSet) {
-          const r = reg;
-          const c = catCols[r];
-          const roll = rng();
-          const targetLen = roll < 0.28 ? 1 : (roll < 0.72 ? 2 : 3);
-          if (targetLen === 1) continue;
-
-          const horiz = rng() < 0.5;
-          const stepDirs = horiz ? [[0, -1], [0, 1]] : [[-1, 0], [1, 0]];
-          shuffle(stepDirs, rng);
-
-          let curLen = 1;
-          for (const [dr, dc] of stepDirs) {
-            let nr = r + dr, nc = c + dc;
-            while (curLen < targetLen && nr >= 0 && nr < N && nc >= 0 && nc < N && grid[nr][nc] === -1) {
-              grid[nr][nc] = reg;
-              sizes[reg]++;
-              curLen++;
-              nr += dr;
-              nc += dc;
-            }
-            if (curLen >= targetLen) break;
-          }
-        }
-
-        function pushNeighbors(regId, r, c) {
-          for (const [dr, dc] of dirs) {
-            const nr = r + dr, nc = c + dc;
-            if (nr >= 0 && nr < N && nc >= 0 && nc < N && grid[nr][nc] === -1) {
-              frontiers[regId].push([nr, nc]);
-            }
-          }
-        }
-
-        // Only non-anchor regions participate in main flood-fill growth
-        for (let r = 0; r < N; r++) {
-          for (let c = 0; c < N; c++) {
-            const reg = grid[r][c];
-            if (reg !== -1 && !anchorSet.has(reg)) {
-              pushNeighbors(reg, r, c);
-            }
-          }
-        }
-
-        let remaining = 0;
-        for (let r = 0; r < N; r++) {
-          for (let c = 0; c < N; c++) {
-            if (grid[r][c] === -1) remaining++;
-          }
-        }
-
-        // 2) Weighted orthogonal flood-fill (Big Background regions expand widely)
-        while (remaining > 0) {
-          const active = [];
-          let totalW = 0;
-
-          for (let reg = 0; reg < N; reg++) {
-            if (anchorSet.has(reg)) continue;
-            const f = frontiers[reg];
-            while (f.length > 0 && grid[f[f.length - 1][0]][f[f.length - 1][1]] !== -1) {
-              f.pop();
-            }
-            if (f.length > 0) {
-              const isBg = bgSet.has(reg);
-              const w = isBg
-                ? 4.4 / Math.pow(sizes[reg], 0.42)
-                : 1.0 / Math.pow(sizes[reg], 1.15);
-              active.push({ reg, w });
-              totalW += w;
-            }
-          }
-
-          // Fallback: if an empty pocket is completely surrounded by anchors, allow anchor to absorb it
-          if (active.length === 0) {
-            for (let r = 0; r < N; r++) {
-              for (let c = 0; c < N; c++) {
-                if (grid[r][c] !== -1) continue;
-                for (const [dr, dc] of dirs) {
-                  const nr = r + dr, nc = c + dc;
-                  if (nr >= 0 && nr < N && nc >= 0 && nc < N && grid[nr][nc] !== -1) {
-                    grid[r][c] = grid[nr][nc];
-                    sizes[grid[r][c]]++;
-                    remaining--;
-                    break;
-                  }
-                }
-              }
-            }
-            if (remaining > 0) continue;
-            break;
-          }
-
-          let pick = rng() * totalW;
-          let chosenReg = active[0].reg;
-          for (const item of active) {
-            pick -= item.w;
-            if (pick <= 0) {
-              chosenReg = item.reg;
-              break;
-            }
-          }
-
-          const f = frontiers[chosenReg];
-          let cell = null;
-          while (f.length > 0) {
-            const idx = Math.floor(rng() * f.length);
-            const cand = f[idx];
-            f[idx] = f[f.length - 1];
-            f.pop();
-            if (grid[cand[0]][cand[1]] === -1) {
-              cell = cand;
-              break;
-            }
-          }
-
-          if (cell) {
-            const [r, c] = cell;
-            grid[r][c] = chosenReg;
-            sizes[chosenReg]++;
-            remaining--;
-            pushNeighbors(chosenReg, r, c);
-          }
-        }
-
-        // Randomly permute region IDs so colors vary organically
-        const perm = shuffle(Array.from({ length: N }, (_, i) => i), rng);
-        for (let r = 0; r < N; r++) {
-          for (let c = 0; c < N; c++) {
-            grid[r][c] = perm[grid[r][c]];
-          }
-        }
-        return grid;
-      }
-
-      function isRegionContiguous(regions, N, regId) {
-        let total = 0, startR = -1, startC = -1;
-        for (let r = 0; r < N; r++) {
-          for (let c = 0; c < N; c++) {
-            if (regions[r][c] === regId) {
-              total++;
-              if (startR === -1) { startR = r; startC = c; }
-            }
-          }
-        }
-        if (total === 0) return false;
-
-        const visited = new Uint8Array(N * N);
-        const queue = [[startR, startC]];
-        visited[startR * N + startC] = 1;
-        let seen = 1;
-        const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-
-        for (let head = 0; head < queue.length; head++) {
-          const [r, c] = queue[head];
-          for (const [dr, dc] of dirs) {
-            const nr = r + dr, nc = c + dc;
-            if (nr >= 0 && nr < N && nc >= 0 && nc < N &&
-                !visited[nr * N + nc] && regions[nr][nc] === regId) {
-              visited[nr * N + nc] = 1;
-              seen++;
-              queue.push([nr, nc]);
-            }
-          }
-        }
-        return seen === total;
-      }
-
-      /**
-       * Hill-Climbing Uniqueness Refinement:
-       * Reassigns boundary cells where Solution 2 differs from Solution 1
-       * (without touching Solution 1's cat cells) while keeping 4-connectivity.
-       */
-      function refineToUnique(regions, N, solutionCols, rng) {
-        const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-        let res = countSolutions(regions, N, 2);
-        if (res.count === 1) return true;
-        if (res.count === 0) return false;
-
-        for (let step = 0; step < 55; step++) {
-          const sol1 = solutionCols;
-          let altSol = res.solutions[0];
-          if (altSol.every((c, r) => c === sol1[r])) altSol = res.solutions[1];
-          if (!altSol) return true;
-
-          const diffCells = [];
-          for (let r = 0; r < N; r++) {
-            if (altSol[r] !== sol1[r]) diffCells.push([r, altSol[r]]);
-          }
-          shuffle(diffCells, rng);
-
-          let mutated = false;
-          for (const [r, c] of diffCells) {
-            const oldReg = regions[r][c];
-            const adjRegs = [];
-            for (const [dr, dc] of dirs) {
-              const nr = r + dr, nc = c + dc;
-              if (nr >= 0 && nr < N && nc >= 0 && nc < N) {
-                const nReg = regions[nr][nc];
-                if (nReg !== oldReg && !adjRegs.includes(nReg)) adjRegs.push(nReg);
-              }
-            }
-            shuffle(adjRegs, rng);
-
-            for (const newReg of adjRegs) {
-              regions[r][c] = newReg;
-              if (isRegionContiguous(regions, N, oldReg)) {
-                mutated = true;
-                break;
-              } else {
-                regions[r][c] = oldReg;
-              }
-            }
-            if (mutated) break;
-          }
-
-          if (!mutated) return false;
-
-          res = countSolutions(regions, N, 2);
-          if (res.count === 1) return true;
-          if (res.count === 0) return false;
-        }
-        return false;
-      }
-
-      /**
-       * Asynchronous chunked puzzle generator so 9x9 and 10x10 never freeze UI.
-       */
-      let activeGenToken = 0;
-
-      function generatePuzzleAsync(N, onDone) {
-        const token = ++activeGenToken;
-        const rng = createRng((Date.now() ^ (Math.random() * 0xFFFFFFFF)) >>> 0);
-        const batchSize = N >= 9 ? 6 : 14;
-        const maxAttempts = N >= 9 ? 420 : 280;
-        let attempts = 0;
-        let uniqueBackup = null;
-
-        function runBatch() {
-          if (token !== activeGenToken) return;
-
-          for (let i = 0; i < batchSize && attempts < maxAttempts; i++) {
-            attempts++;
-            const solutionCols = generateCatPlacement(N, rng);
-            const regions = growAuthenticRegions(N, solutionCols, rng);
-
-            if (refineToUnique(regions, N, solutionCols, rng)) {
-              const verify = countSolutions(regions, N, 2);
-              if (verify.count !== 1) continue;
-
-              if (isHumanSolvable(N, regions)) {
-                const chosenPalette = shuffle(REGION_PALETTE.slice(), rng).slice(0, N);
-                onDone({ N, regions, solutionCols: verify.solutions[0], palette: chosenPalette });
-                return;
-              }
-
-              if (!uniqueBackup) {
-                uniqueBackup = {
-                  N,
-                  regions: regions.map(row => row.slice()),
-                  solutionCols: verify.solutions[0],
-                  palette: shuffle(REGION_PALETTE.slice(), rng).slice(0, N)
-                };
-              }
-            }
-          }
-
-          if (attempts < maxAttempts) {
-            setTimeout(runBatch, 0);
-          } else if (uniqueBackup) {
-            onDone(uniqueBackup);
-          } else {
-            // Very rare: restart with fresh seed
-            setTimeout(() => generatePuzzleAsync(N, onDone), 0);
-          }
-        }
-
-        setTimeout(runBatch, 16);
-      }
-
-      /* ==========================================================================
-         GAME STATE & DOM REFERENCES
+         GAME STATE
          ========================================================================== */
       const state = {
-        N: prefs.boardSize || 8,
+        mode: prefs.mode || '8',
+        N: 8,
         regions: [],
         solutionCols: [],
         palette: [],
@@ -2365,39 +1463,43 @@
         autoOwners: [],
         undoStack: [],
         lives: MAX_LIVES,
+        mistakes: 0,
         solved: false,
         outOfFish: false,
         seconds: 0,
-        timerId: null,
         paused: false,
+        timerId: null,
         activeHint: null,
         guardTimer: null
       };
 
+      /* ==========================================================================
+         DOM REFERENCES
+         ========================================================================== */
       const dom = {
-        levelBadge: document.getElementById('levelBadge'),
         puzzleSubtitle: document.getElementById('puzzleSubtitle'),
-        sizeBtns: document.querySelectorAll('.size-btn'),
+        btnSound: document.getElementById('btnSound'),
+        btnTheme: document.getElementById('btnTheme'),
+        btnHelp: document.getElementById('btnHelp'),
+        modeBtns: Array.from(document.querySelectorAll('.mode-btn')),
         catFoundNum: document.getElementById('catFoundNum'),
         catTotalNum: document.getElementById('catTotalNum'),
         fishLives: document.getElementById('fishLives'),
+        levelDisplay: document.getElementById('levelDisplay'),
         timerDisplay: document.getElementById('timerDisplay'),
-        solvedDisplay: document.getElementById('solvedDisplay'),
+        mistakesDisplay: document.getElementById('mistakesDisplay'),
         statusBanner: document.getElementById('statusBanner'),
+        hintRuleTag: document.getElementById('hintRuleTag'),
         statusText: document.getElementById('statusText'),
         btnApplyHint: document.getElementById('btnApplyHint'),
         btnCloseBanner: document.getElementById('btnCloseBanner'),
         boardGrid: document.getElementById('boardGrid'),
-        boardLoading: document.getElementById('boardLoading'),
-        loadingLabel: document.getElementById('loadingLabel'),
         btnUndo: document.getElementById('btnUndo'),
+        btnClear: document.getElementById('btnClear'),
         btnAutoX: document.getElementById('btnAutoX'),
         btnHint: document.getElementById('btnHint'),
-        btnClear: document.getElementById('btnClear'),
         btnNew: document.getElementById('btnNew'),
-        btnSound: document.getElementById('btnSound'),
-        btnTheme: document.getElementById('btnTheme'),
-        btnHelp: document.getElementById('btnHelp'),
+        footerBest: document.getElementById('footerBest'),
         helpModal: document.getElementById('helpModal'),
         btnCloseHelp: document.getElementById('btnCloseHelp'),
         btnGotIt: document.getElementById('btnGotIt'),
@@ -2406,76 +1508,1025 @@
         btnRetryBoard: document.getElementById('btnRetryBoard'),
         victoryModal: document.getElementById('victoryModal'),
         victorySubtitle: document.getElementById('victorySubtitle'),
-        vLevel: document.getElementById('vLevel'),
         vTime: document.getElementById('vTime'),
-        vFish: document.getElementById('vFish'),
+        vMistakes: document.getElementById('vMistakes'),
+        vBest: document.getElementById('vBest'),
         btnNextLevel: document.getElementById('btnNextLevel'),
         btnAdmireBoard: document.getElementById('btnAdmireBoard'),
         confettiCanvas: document.getElementById('confettiCanvas')
       };
 
       /* ==========================================================================
-         INLINE SVG TEMPLATES (CAT FACE, X MARK, GOLDEN FISH)
+         WEB AUDIO API SYNTHESIZED SOUND ENGINE (NO EXTERNAL AUDIO URLs)
          ========================================================================== */
-      function getPlacedCatSVG() {
-        return `
-          <svg class="cat-svg" viewBox="0 0 64 64" aria-hidden="true">
-            <path d="M12 26 L9 8 L25 16.5 C29 15.2 35 15.2 39 16.5 L55 8 L52 26 C55.5 31 56.5 38 53.5 45 C50 53 41.5 57 32 57 C22.5 57 14 53 10.5 45 C7.5 38 8.5 31 12 26 Z" fill="#2D2420"/>
-            <path d="M14.5 21.5 L13 13 L21.5 17.5 Z" fill="#F4A59A"/>
-            <path d="M49.5 21.5 L51 13 L42.5 17.5 Z" fill="#F4A59A"/>
-            <path d="M16 40 C16 32.5 22.5 27.5 32 27.5 C41.5 27.5 48 32.5 48 40 C48 49.5 41 55 32 55 C23 55 16 49.5 16 40 Z" fill="#FFFFFF"/>
-            <circle cx="24" cy="36.5" r="3.6" fill="#2D2420"/>
-            <circle cx="40" cy="36.5" r="3.6" fill="#2D2420"/>
-            <circle cx="25.2" cy="35.1" r="1.2" fill="#FFFFFF"/>
-            <circle cx="41.2" cy="35.1" r="1.2" fill="#FFFFFF"/>
-            <path d="M29.2 41.8 L34.8 41.8 L32 44.8 Z" fill="#F28482"/>
-            <path d="M27.5 46.8 Q30 49.4 32 47.2 Q34 49.4 36.5 46.8" fill="none" stroke="#2D2420" stroke-width="2.1" stroke-linecap="round"/>
-          </svg>
-        `;
+      const Sound = (() => {
+        let ctx = null;
+
+        function ensureCtx() {
+          if (prefs.muted) return null;
+          try {
+            if (!ctx) {
+              const AudioCtx = window.AudioContext || window.webkitAudioContext;
+              if (AudioCtx) ctx = new AudioCtx();
+            }
+            if (ctx && ctx.state === 'suspended') ctx.resume();
+          } catch (_) {
+            return null;
+          }
+          return ctx;
+        }
+
+        function tone(freq, duration, type = 'sine', gainVal = 0.08, delay = 0) {
+          const ac = ensureCtx();
+          if (!ac) return;
+          try {
+            const now = ac.currentTime + delay;
+            const osc = ac.createOscillator();
+            const gain = ac.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, now);
+            gain.gain.setValueAtTime(0.0001, now);
+            gain.gain.exponentialRampToValueAtTime(gainVal, now + 0.012);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+            osc.connect(gain);
+            gain.connect(ac.destination);
+            osc.start(now);
+            osc.stop(now + duration + 0.02);
+          } catch (_) {}
+        }
+
+        return {
+          pop(freq = 440) {
+            tone(freq, 0.075, 'triangle', 0.06);
+          },
+          catChime() {
+            tone(523.25, 0.11, 'sine', 0.085, 0);
+            tone(659.25, 0.12, 'sine', 0.085, 0.06);
+            tone(783.99, 0.16, 'triangle', 0.085, 0.12);
+          },
+          errorBuzz() {
+            tone(185, 0.16, 'sawtooth', 0.075, 0);
+            tone(145, 0.22, 'sawtooth', 0.075, 0.09);
+          },
+          hint() {
+            tone(587.33, 0.12, 'sine', 0.07, 0);
+            tone(880.0, 0.18, 'sine', 0.07, 0.08);
+          },
+          victory() {
+            const notes = [523.25, 659.25, 783.99, 1046.5];
+            notes.forEach((f, i) => tone(f, 0.24, 'triangle', 0.09, i * 0.09));
+          }
+        };
+      })();
+
+      /* ==========================================================================
+         UTILITIES & SVG ASSETS
+         ========================================================================== */
+      function formatTime(totalSeconds) {
+        const m = Math.floor(totalSeconds / 60);
+        const s = totalSeconds % 60;
+        return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      }
+
+      function formatCell(r, c) {
+        return `Row ${r + 1}, Col ${c + 1}`;
+      }
+
+      function getDailyDateStr() {
+        const d = new Date();
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+      }
+
+      function hashString(str) {
+        let h = 2166136261 >>> 0;
+        for (let i = 0; i < str.length; i++) {
+          h ^= str.charCodeAt(i);
+          h = Math.imul(h, 16777619);
+        }
+        return h >>> 0;
+      }
+
+      function mulberry32(seed) {
+        let a = seed >>> 0;
+        return function () {
+          a |= 0;
+          a = (a + 0x6D2B79F5) | 0;
+          let t = Math.imul(a ^ (a >>> 15), 1 | a);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+
+      function shuffleWithRng(arr, rng) {
+        const a = arr.slice();
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(rng() * (i + 1));
+          const tmp = a[i];
+          a[i] = a[j];
+          a[j] = tmp;
+        }
+        return a;
       }
 
       function getMarkXSVG() {
         return `
           <svg class="mark-x" viewBox="0 0 24 24" aria-hidden="true">
-            <line x1="4.5" y1="4.5" x2="19.5" y2="19.5"/>
-            <line x1="19.5" y1="4.5" x2="4.5" y2="19.5"/>
+            <line x1="5" y1="5" x2="19" y2="19" />
+            <line x1="19" y1="5" x2="5" y2="19" />
           </svg>
         `;
       }
 
-      function getFishSVG(isLost, isLosing) {
-        const cls = `fish-icon${isLost ? ' lost' : ''}${isLosing ? ' losing' : ''}`;
+      function getPlacedCatSVG() {
         return `
-          <svg class="${cls}" viewBox="0 0 36 36" aria-hidden="true">
-            <path d="M25 18 C25 11.5 18.5 7.5 11.5 9.8 C7.5 11.1 4.5 14.5 3.5 18 C4.5 21.5 7.5 24.9 11.5 26.2 C18.5 28.5 25 24.5 25 18 Z" fill="#F5A623"/>
-            <path d="M24 18 L32.5 11 L30.5 18 L32.5 25 Z" fill="#E88B14"/>
-            <path d="M13 10.5 Q17 14 17 18 Q17 22 13 25.5" fill="none" stroke="#FFD166" stroke-width="1.8" stroke-linecap="round"/>
-            <circle cx="9.8" cy="15.8" r="1.7" fill="#2D2420"/>
-            <circle cx="10.3" cy="15.2" r="0.6" fill="#FFFFFF"/>
+          <svg class="cat-svg" viewBox="0 0 64 64" aria-hidden="true">
+            <path d="M13 26 L10 9 L25 17 C29 15.8 35 15.8 39 17 L54 9 L51 26 C54 31 55 38 52 44 C49 52 41 56 32 56 C23 56 15 52 12 44 C9 38 10 31 13 26 Z" fill="#2A2321" stroke="#FFFFFF" stroke-width="2.4" stroke-linejoin="round"/>
+            <path d="M14.5 14 L22 18.5 L16.2 24 Z" fill="#F29CB0"/>
+            <path d="M49.5 14 L42 18.5 L47.8 24 Z" fill="#F29CB0"/>
+            <path d="M15 41 C15 32.5 22 27.5 32 27.5 C42 27.5 49 32.5 49 41 C49 49.5 41.5 54 32 54 C22.5 54 15 49.5 15 41 Z" fill="#FFFFFF"/>
+            <path d="M27.5 27.5 Q32 34 36.5 27.5 Z" fill="#2A2321"/>
+            <circle cx="23.5" cy="36.5" r="3.6" fill="#2A2321"/>
+            <circle cx="40.5" cy="36.5" r="3.6" fill="#2A2321"/>
+            <circle cx="24.8" cy="35.1" r="1.25" fill="#FFFFFF"/>
+            <circle cx="41.8" cy="35.1" r="1.25" fill="#FFFFFF"/>
+            <ellipse cx="18.8" cy="42.2" rx="2.6" ry="1.5" fill="#F6A5B8" opacity="0.8"/>
+            <ellipse cx="45.2" cy="42.2" rx="2.6" ry="1.5" fill="#F6A5B8" opacity="0.8"/>
+            <path d="M29.4 41.2 L34.6 41.2 L32 44.2 Z" fill="#F07B82"/>
+            <path d="M27.5 45.8 Q32 49.4 36.5 45.8" fill="none" stroke="#2A2321" stroke-width="2.2" stroke-linecap="round"/>
+          </svg>
+        `;
+      }
+
+      function getFishSVG(lost, losing) {
+        return `
+          <svg class="fish-icon${lost ? ' lost' : ''}${losing ? ' losing' : ''}" viewBox="0 0 32 32" aria-hidden="true">
+            <path d="M22 16 C22 10.5 16.5 7 10.5 9 C7 10.2 4.5 13 3.5 16 C4.5 19 7 21.8 10.5 23 C16.5 25 22 21.5 22 16 Z" fill="#F5A623" stroke="#C9790B" stroke-width="1.3"/>
+            <path d="M20.5 16 L28.5 10 L26.8 16 L28.5 22 Z" fill="#F5A623" stroke="#C9790B" stroke-width="1.3" stroke-linejoin="round"/>
+            <circle cx="9.8" cy="14.5" r="1.6" fill="#3B2B26"/>
+            <circle cx="10.3" cy="14" r="0.55" fill="#FFFFFF"/>
+            <path d="M14.5 12.2 Q16.5 16 14.5 19.8" fill="none" stroke="#FFF2D6" stroke-width="1.4" stroke-linecap="round"/>
           </svg>
         `;
       }
 
       /* ==========================================================================
-         UI HELPERS (Theme, Sound, Fish Lives, Banner, Timer)
+         FAST MRV BACKTRACKING SOLVER (STOPS AT 2 SOLUTIONS FOR STRICT UNIQUENESS)
          ========================================================================== */
-      function formatTime(sec) {
-        return `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
+      function countSolutions(N, regions, limit = 2) {
+        const regCells = Array.from({ length: N }, () => []);
+        for (let r = 0; r < N; r++) {
+          for (let c = 0; c < N; c++) {
+            regCells[regions[r][c]].push((r << 4) | c);
+          }
+        }
+
+        const usedRow = new Uint8Array(N);
+        const usedCol = new Uint8Array(N);
+        const usedReg = new Uint8Array(N);
+        const rowOfCol = new Int8Array(N).fill(-1);
+        const colOfRow = new Int8Array(N).fill(-1);
+
+        let solutions = 0;
+
+        function canPlace(r, c) {
+          if (usedRow[r] || usedCol[c]) return false;
+          if (r > 0 && colOfRow[r - 1] !== -1 && Math.abs(colOfRow[r - 1] - c) <= 1) return false;
+          if (r + 1 < N && colOfRow[r + 1] !== -1 && Math.abs(colOfRow[r + 1] - c) <= 1) return false;
+          return true;
+        }
+
+        function search(placed) {
+          if (solutions >= limit) return;
+          if (placed === N) {
+            solutions++;
+            return;
+          }
+
+          // MRV: choose unplaced region with fewest currently valid cells
+          let bestReg = -1;
+          let bestCount = 999;
+          let bestList = null;
+
+          for (let reg = 0; reg < N; reg++) {
+            if (usedReg[reg]) continue;
+            const cells = regCells[reg];
+            let validCount = 0;
+            const valid = [];
+            for (let i = 0; i < cells.length; i++) {
+              const code = cells[i];
+              const r = code >> 4;
+              const c = code & 15;
+              if (canPlace(r, c)) {
+                valid.push(code);
+                validCount++;
+                if (validCount >= bestCount) break;
+              }
+            }
+            if (validCount === 0) return;
+            if (validCount < bestCount) {
+              bestCount = validCount;
+              bestReg = reg;
+              bestList = valid;
+              if (bestCount === 1) break;
+            }
+          }
+
+          usedReg[bestReg] = 1;
+          for (let i = 0; i < bestList.length; i++) {
+            const code = bestList[i];
+            const r = code >> 4;
+            const c = code & 15;
+            usedRow[r] = 1;
+            usedCol[c] = 1;
+            colOfRow[r] = c;
+            rowOfCol[c] = r;
+
+            search(placed + 1);
+
+            usedRow[r] = 0;
+            usedCol[c] = 0;
+            colOfRow[r] = -1;
+            rowOfCol[c] = -1;
+            if (solutions >= limit) break;
+          }
+          usedReg[bestReg] = 0;
+        }
+
+        search(0);
+        return solutions;
       }
 
+      /* ==========================================================================
+         VERIFIED ASYMMETRICAL UNIQUE-SOLUTION FALLBACK BOARDS (6x6 TO 10x10)
+         Each board has 4-connected regions, small Anchor regions, large Background
+         regions, and is guaranteed to have a strictly unique solution.
+         ========================================================================== */
+      const VERIFIED_FALLBACKS = {
+        6: {
+          solutionCols: [1, 3, 5, 0, 2, 4],
+          regions: [
+            [3, 0, 2, 2, 2, 2],
+            [3, 3, 1, 1, 2, 2],
+            [3, 3, 4, 4, 2, 2],
+            [3, 3, 4, 4, 5, 5],
+            [4, 4, 4, 5, 5, 5],
+            [5, 5, 5, 5, 5, 5]
+          ]
+        },
+        7: {
+          solutionCols: [0, 2, 4, 6, 1, 3, 5],
+          regions: [
+            [0, 1, 1, 2, 2, 3, 3],
+            [4, 4, 1, 2, 2, 3, 3],
+            [4, 4, 5, 5, 2, 3, 3],
+            [4, 4, 5, 5, 6, 6, 3],
+            [4, 4, 5, 5, 6, 6, 6],
+            [5, 5, 5, 5, 6, 6, 6],
+            [6, 6, 6, 6, 6, 6, 6]
+          ]
+        },
+        8: {
+          solutionCols: [0, 2, 4, 6, 1, 3, 5, 7],
+          regions: [
+            [0, 1, 1, 2, 2, 3, 3, 3],
+            [4, 4, 1, 2, 2, 3, 3, 3],
+            [4, 4, 5, 5, 2, 3, 3, 3],
+            [4, 4, 5, 5, 6, 6, 3, 3],
+            [4, 4, 5, 5, 6, 6, 7, 7],
+            [5, 5, 5, 5, 6, 6, 7, 7],
+            [6, 6, 6, 6, 6, 6, 7, 7],
+            [7, 7, 7, 7, 7, 7, 7, 7]
+          ]
+        },
+        9: {
+          solutionCols: [0, 2, 4, 6, 8, 1, 3, 5, 7],
+          regions: [
+            [0, 1, 1, 2, 2, 3, 3, 4, 4],
+            [5, 5, 1, 2, 2, 3, 3, 4, 4],
+            [5, 5, 6, 6, 2, 3, 3, 4, 4],
+            [5, 5, 6, 6, 7, 7, 3, 4, 4],
+            [5, 5, 6, 6, 7, 7, 8, 8, 4],
+            [5, 5, 6, 6, 7, 7, 8, 8, 8],
+            [6, 6, 6, 6, 7, 7, 8, 8, 8],
+            [7, 7, 7, 7, 7, 7, 8, 8, 8],
+            [8, 8, 8, 8, 8, 8, 8, 8, 8]
+          ]
+        },
+        10: {
+          solutionCols: [0, 2, 4, 6, 8, 1, 3, 5, 7, 9],
+          regions: [
+            [0, 1, 1, 2, 2, 3, 3, 4, 4, 4],
+            [5, 5, 1, 2, 2, 3, 3, 4, 4, 4],
+            [5, 5, 6, 6, 2, 3, 3, 4, 4, 4],
+            [5, 5, 6, 6, 7, 7, 3, 4, 4, 4],
+            [5, 5, 6, 6, 7, 7, 8, 8, 4, 4],
+            [5, 5, 6, 6, 7, 7, 8, 8, 9, 9],
+            [6, 6, 6, 6, 7, 7, 8, 8, 9, 9],
+            [7, 7, 7, 7, 7, 7, 8, 8, 9, 9],
+            [8, 8, 8, 8, 8, 8, 8, 8, 9, 9],
+            [9, 9, 9, 9, 9, 9, 9, 9, 9, 9]
+          ]
+        }
+      };
+
+      function transformPuzzle(N, regions, solutionCols, rng) {
+        const rot = Math.floor(rng() * 4);
+        const flip = rng() < 0.5;
+
+        function mapCoord(r, c) {
+          let nr = r, nc = c;
+          if (flip) nc = N - 1 - nc;
+          for (let k = 0; k < rot; k++) {
+            const tr = nr;
+            nr = nc;
+            nc = N - 1 - tr;
+          }
+          return [nr, nc];
+        }
+
+        const newRegions = Array.from({ length: N }, () => new Array(N).fill(0));
+        const newSol = new Array(N).fill(0);
+        const regPerm = shuffleWithRng(Array.from({ length: N }, (_, i) => i), rng);
+
+        for (let r = 0; r < N; r++) {
+          for (let c = 0; c < N; c++) {
+            const [nr, nc] = mapCoord(r, c);
+            newRegions[nr][nc] = regPerm[regions[r][c]];
+          }
+          const [sr, sc] = mapCoord(r, solutionCols[r]);
+          newSol[sr] = sc;
+        }
+
+        return { regions: newRegions, solutionCols: newSol };
+      }
+
+      /* ==========================================================================
+         FAST ASYMMETRICAL UNIQUE-SOLUTION GENERATOR (<120ms + FALLBACKS)
+         Creates 1-2 small Anchor regions (1-3 cells) and 1-2 Big Background
+         regions plus medium regions, verified by countSolutions === 1.
+         ========================================================================== */
+      function generateRandomValidCats(N, rng) {
+        const cols = new Array(N).fill(-1);
+        const used = new Uint8Array(N);
+
+        function place(r) {
+          if (r === N) return true;
+          const order = shuffleWithRng(Array.from({ length: N }, (_, i) => i), rng);
+          for (let i = 0; i < N; i++) {
+            const c = order[i];
+            if (used[c]) continue;
+            if (r > 0 && Math.abs(cols[r - 1] - c) <= 1) continue;
+            cols[r] = c;
+            used[c] = 1;
+            if (place(r + 1)) return true;
+            used[c] = 0;
+            cols[r] = -1;
+          }
+          return false;
+        }
+
+        return place(0) ? cols : VERIFIED_FALLBACKS[N].solutionCols.slice();
+      }
+
+      function generateAsymmetricalRegions(N, solutionCols, rng) {
+        const regions = Array.from({ length: N }, () => new Array(N).fill(-1));
+        const counts = new Array(N).fill(1);
+        const frontiers = Array.from({ length: N }, () => []);
+        const dirs = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+
+        // Assign region roles: 1-2 small Anchors (1-3 cells), 1-2 Big Backgrounds, rest medium
+        const regIds = shuffleWithRng(Array.from({ length: N }, (_, i) => i), rng);
+        const maxCap = new Array(N).fill(N * N);
+        const weight = new Array(N).fill(1);
+
+        const anchorCount = N >= 8 ? 2 : 1;
+        const bgCount = N >= 9 ? 2 : 1;
+
+        for (let i = 0; i < anchorCount; i++) {
+          const id = regIds[i];
+          maxCap[id] = i === 0 ? (rng() < 0.45 ? 1 : 2) : (2 + Math.floor(rng() * 2));
+          weight[id] = 0.35;
+        }
+        for (let i = anchorCount; i < anchorCount + bgCount; i++) {
+          const id = regIds[i];
+          maxCap[id] = N * N;
+          weight[id] = 4.2;
+        }
+        for (let i = anchorCount + bgCount; i < N; i++) {
+          const id = regIds[i];
+          maxCap[id] = Math.max(4, Math.floor(N * 1.15));
+          weight[id] = 1.15;
+        }
+
+        for (let r = 0; r < N; r++) {
+          const c = solutionCols[r];
+          regions[r][c] = r;
+          for (const [dr, dc] of dirs) {
+            const nr = r + dr, nc = c + dc;
+            if (nr >= 0 && nr < N && nc >= 0 && nc < N) {
+              frontiers[r].push([nr, nc]);
+            }
+          }
+        }
+
+        let remaining = N * N - N;
+
+        while (remaining > 0) {
+          let totalW = 0;
+          const eligible = [];
+
+          for (let reg = 0; reg < N; reg++) {
+            // Clean already-claimed cells from frontier
+            const f = frontiers[reg];
+            let write = 0;
+            for (let i = 0; i < f.length; i++) {
+              const [fr, fc] = f[i];
+              if (regions[fr][fc] === -1) f[write++] = f[i];
+            }
+            f.length = write;
+
+            if (f.length > 0 && counts[reg] < maxCap[reg]) {
+              eligible.push(reg);
+              totalW += weight[reg];
+            }
+          }
+
+          // If caps blocked filling, lift caps for any region with available frontier
+          if (eligible.length === 0) {
+            for (let reg = 0; reg < N; reg++) {
+              if (frontiers[reg].length > 0) {
+                eligible.push(reg);
+                totalW += weight[reg];
+              }
+            }
+            if (eligible.length === 0) break;
+          }
+
+          // Weighted pick
+          let pick = rng() * totalW;
+          let chosenReg = eligible[eligible.length - 1];
+          for (let i = 0; i < eligible.length; i++) {
+            pick -= weight[eligible[i]];
+            if (pick <= 0) {
+              chosenReg = eligible[i];
+              break;
+            }
+          }
+
+          const f = frontiers[chosenReg];
+          const idx = Math.floor(rng() * f.length);
+          const [nr, nc] = f[idx];
+          f.splice(idx, 1);
+          if (regions[nr][nc] !== -1) continue;
+
+          regions[nr][nc] = chosenReg;
+          counts[chosenReg]++;
+          remaining--;
+
+          for (const [dr, dc] of dirs) {
+            const ar = nr + dr, ac = nc + dc;
+            if (ar >= 0 && ar < N && ac >= 0 && ac < N && regions[ar][ac] === -1) {
+              f.push([ar, ac]);
+            }
+          }
+        }
+
+        return regions;
+      }
+
+      function generatePuzzleFast(N, seedOverride = null) {
+        const startTime = performance.now();
+        const seed = seedOverride !== null
+          ? seedOverride
+          : ((Date.now() ^ Math.floor(Math.random() * 0xFFFFFFFF)) >>> 0);
+        const rng = mulberry32(seed);
+        const palette = shuffleWithRng(REGION_PALETTE, rng).slice(0, N);
+
+        let attempts = 0;
+        const maxAttempts = N >= 9 ? 160 : 260;
+
+        while (attempts < maxAttempts && (performance.now() - startTime) < GEN_BUDGET_MS) {
+          attempts++;
+          const sol = generateRandomValidCats(N, rng);
+          const regs = generateAsymmetricalRegions(N, sol, rng);
+
+          // Quick sanity check: every cell assigned
+          let ok = true;
+          for (let r = 0; r < N && ok; r++) {
+            for (let c = 0; c < N; c++) {
+              if (regs[r][c] === -1) { ok = false; break; }
+            }
+          }
+          if (!ok) continue;
+
+          if (countSolutions(N, regs, 2) === 1) {
+            return { regions: regs, solutionCols: sol, palette };
+          }
+        }
+
+        // Strict <120ms safety net: use pre-verified unique asymmetrical fallback + random symmetry
+        const fb = VERIFIED_FALLBACKS[N] || VERIFIED_FALLBACKS[8];
+        const transformed = transformPuzzle(N, fb.regions, fb.solutionCols, rng);
+        return {
+          regions: transformed.regions,
+          solutionCols: transformed.solutionCols,
+          palette
+        };
+      }
+
+      /* ==========================================================================
+         9-RULE DEDUCTIVE HINT ENGINE
+         1. Error Check
+         2. Cat Blocking
+         3. Naked Single
+         4. Pointing / Line Elimination
+         5. Touching Elimination
+         6. Naked Pair (k=2)
+         7. Naked Triple (k=3)
+         8. Naked Quad (k=4)
+         9. 1-Step Contradiction (What-If)
+         ========================================================================== */
+      function getCombinations(arr, k) {
+        const out = [];
+        const cur = [];
+        function rec(start) {
+          if (cur.length === k) {
+            out.push(cur.slice());
+            return;
+          }
+          for (let i = start; i <= arr.length - (k - cur.length); i++) {
+            cur.push(arr[i]);
+            rec(i + 1);
+            cur.pop();
+          }
+        }
+        rec(0);
+        return out;
+      }
+
+      function findNextLogicalStep(N, regions, board, palette) {
+        const hasCatRow = new Uint8Array(N);
+        const hasCatCol = new Uint8Array(N);
+        const hasCatReg = new Uint8Array(N);
+        const cats = [];
+
+        for (let r = 0; r < N; r++) {
+          for (let c = 0; c < N; c++) {
+            if (board[r][c] === CAT) {
+              hasCatRow[r] = 1;
+              hasCatCol[c] = 1;
+              hasCatReg[regions[r][c]] = 1;
+              cats.push([r, c]);
+            }
+          }
+        }
+
+        // RULE 2: Cat Blocking (eliminations around placed cats)
+        for (const [cr, cc] of cats) {
+          const creg = regions[cr][cc];
+          const toMark = [];
+          for (let r = 0; r < N; r++) {
+            for (let c = 0; c < N; c++) {
+              if (board[r][c] !== EMPTY) continue;
+              if (r === cr || c === cc || regions[r][c] === creg ||
+                  (Math.abs(r - cr) <= 1 && Math.abs(c - cc) <= 1)) {
+                toMark.push([r, c]);
+              }
+            }
+          }
+          if (toMark.length > 0) {
+            return {
+              ruleName: 'Cat Blocking',
+              targets: toMark,
+              secondary: [[cr, cc]],
+              text: `The Cat at ${formatCell(cr, cc)} (${palette[creg].name}) blocks ${toMark.length} open cell${toMark.length > 1 ? 's' : ''} in its row, column, color, or neighbors.`,
+              action: { type: 'mark_x', cells: toMark }
+            };
+          }
+        }
+
+        // Build candidate lists for unplaced regions, rows, cols
+        const regCands = Array.from({ length: N }, () => []);
+        const rowCands = Array.from({ length: N }, () => []);
+        const colCands = Array.from({ length: N }, () => []);
+        const allCands = [];
+
+        for (let r = 0; r < N; r++) {
+          for (let c = 0; c < N; c++) {
+            if (board[r][c] === EMPTY) {
+              const reg = regions[r][c];
+              regCands[reg].push([r, c]);
+              rowCands[r].push([r, c]);
+              colCands[c].push([r, c]);
+              allCands.push([r, c]);
+            }
+          }
+        }
+
+        // RULE 3: Naked Single (only 1 valid cell left in a color, row, or col)
+        for (let reg = 0; reg < N; reg++) {
+          if (!hasCatReg[reg] && regCands[reg].length === 1) {
+            const [r, c] = regCands[reg][0];
+            return {
+              ruleName: 'Naked Single',
+              targets: [[r, c]],
+              secondary: [],
+              text: `${palette[reg].name} has only 1 open cell left at ${formatCell(r, c)} — a Cat must go there!`,
+              action: { type: 'place_cat', cells: [[r, c]] }
+            };
+          }
+        }
+        for (let r = 0; r < N; r++) {
+          if (!hasCatRow[r] && rowCands[r].length === 1) {
+            const [rr, cc] = rowCands[r][0];
+            return {
+              ruleName: 'Naked Single',
+              targets: [[rr, cc]],
+              secondary: [],
+              text: `Row ${r + 1} has only 1 open cell left at ${formatCell(rr, cc)} (${palette[regions[rr][cc]].name}) — a Cat must go there!`,
+              action: { type: 'place_cat', cells: [[rr, cc]] }
+            };
+          }
+        }
+        for (let c = 0; c < N; c++) {
+          if (!hasCatCol[c] && colCands[c].length === 1) {
+            const [rr, cc] = colCands[c][0];
+            return {
+              ruleName: 'Naked Single',
+              targets: [[rr, cc]],
+              secondary: [],
+              text: `Col ${c + 1} has only 1 open cell left at ${formatCell(rr, cc)} (${palette[regions[rr][cc]].name}) — a Cat must go there!`,
+              action: { type: 'place_cat', cells: [[rr, cc]] }
+            };
+          }
+        }
+
+        // RULE 4: Pointing / Line Elimination
+        for (let reg = 0; reg < N; reg++) {
+          if (hasCatReg[reg] || regCands[reg].length < 2) continue;
+          const cells = regCands[reg];
+          const rSet = new Set(cells.map(([r]) => r));
+          const cSet = new Set(cells.map(([, c]) => c));
+
+          if (rSet.size === 1) {
+            const row = cells[0][0];
+            const elims = rowCands[row].filter(([rr, cc]) => regions[rr][cc] !== reg);
+            if (elims.length > 0) {
+              return {
+                ruleName: 'Pointing (Row)',
+                targets: elims,
+                secondary: cells,
+                text: `All open cells of ${palette[reg].name} lie in Row ${row + 1}, so no other color can hold a Cat in Row ${row + 1}.`,
+                action: { type: 'mark_x', cells: elims }
+              };
+            }
+          }
+          if (cSet.size === 1) {
+            const col = cells[0][1];
+            const elims = colCands[col].filter(([rr, cc]) => regions[rr][cc] !== reg);
+            if (elims.length > 0) {
+              return {
+                ruleName: 'Pointing (Col)',
+                targets: elims,
+                secondary: cells,
+                text: `All open cells of ${palette[reg].name} lie in Col ${col + 1}, so no other color can hold a Cat in Col ${col + 1}.`,
+                action: { type: 'mark_x', cells: elims }
+              };
+            }
+          }
+        }
+
+        // Reverse Pointing: all open cells of a row/col belong to 1 color
+        for (let r = 0; r < N; r++) {
+          if (hasCatRow[r] || rowCands[r].length < 2) continue;
+          const regs = new Set(rowCands[r].map(([rr, cc]) => regions[rr][cc]));
+          if (regs.size === 1) {
+            const onlyReg = [...regs][0];
+            const elims = regCands[onlyReg].filter(([rr]) => rr !== r);
+            if (elims.length > 0) {
+              return {
+                ruleName: 'Pointing (Color)',
+                targets: elims,
+                secondary: rowCands[r],
+                text: `Row ${r + 1}'s remaining cells are all in ${palette[onlyReg].name}, so eliminate ${palette[onlyReg].name} cells outside Row ${r + 1}.`,
+                action: { type: 'mark_x', cells: elims }
+              };
+            }
+          }
+        }
+        for (let c = 0; c < N; c++) {
+          if (hasCatCol[c] || colCands[c].length < 2) continue;
+          const regs = new Set(colCands[c].map(([rr, cc]) => regions[rr][cc]));
+          if (regs.size === 1) {
+            const onlyReg = [...regs][0];
+            const elims = regCands[onlyReg].filter(([, cc]) => cc !== c);
+            if (elims.length > 0) {
+              return {
+                ruleName: 'Pointing (Color)',
+                targets: elims,
+                secondary: colCands[c],
+                text: `Col ${c + 1}'s remaining cells are all in ${palette[onlyReg].name}, so eliminate ${palette[onlyReg].name} cells outside Col ${c + 1}.`,
+                action: { type: 'mark_x', cells: elims }
+              };
+            }
+          }
+        }
+
+        // RULE 5: Touching Elimination (a candidate blocks all remaining cells of another color/row/col)
+        function blocksCell(r1, c1, r2, c2) {
+          return r1 === r2 || c1 === c2 || regions[r1][c1] === regions[r2][c2] ||
+            (Math.abs(r1 - r2) <= 1 && Math.abs(c1 - c2) <= 1);
+        }
+
+        for (const [r, c] of allCands) {
+          const myReg = regions[r][c];
+          for (let reg = 0; reg < N; reg++) {
+            if (hasCatReg[reg] || reg === myReg || regCands[reg].length === 0) continue;
+            if (regCands[reg].every(([tr, tc]) => blocksCell(r, c, tr, tc))) {
+              return {
+                ruleName: 'Touching Elimination',
+                targets: [[r, c]],
+                secondary: regCands[reg],
+                text: `Placing a Cat at ${formatCell(r, c)} (${palette[myReg].name}) would eliminate every remaining cell of ${palette[reg].name} — so ${formatCell(r, c)} must be ✕.`,
+                action: { type: 'mark_x', cells: [[r, c]] }
+              };
+            }
+          }
+          for (let row = 0; row < N; row++) {
+            if (hasCatRow[row] || row === r || rowCands[row].length === 0) continue;
+            if (rowCands[row].every(([tr, tc]) => blocksCell(r, c, tr, tc))) {
+              return {
+                ruleName: 'Touching Elimination',
+                targets: [[r, c]],
+                secondary: rowCands[row],
+                text: `Placing a Cat at ${formatCell(r, c)} (${palette[myReg].name}) would block every remaining cell in Row ${row + 1} — so ${formatCell(r, c)} must be ✕.`,
+                action: { type: 'mark_x', cells: [[r, c]] }
+              };
+            }
+          }
+          for (let col = 0; col < N; col++) {
+            if (hasCatCol[col] || col === c || colCands[col].length === 0) continue;
+            if (colCands[col].every(([tr, tc]) => blocksCell(r, c, tr, tc))) {
+              return {
+                ruleName: 'Touching Elimination',
+                targets: [[r, c]],
+                secondary: colCands[col],
+                text: `Placing a Cat at ${formatCell(r, c)} (${palette[myReg].name}) would block every remaining cell in Col ${col + 1} — so ${formatCell(r, c)} must be ✕.`,
+                action: { type: 'mark_x', cells: [[r, c]] }
+              };
+            }
+          }
+        }
+
+        // RULES 6, 7, 8: Naked Pair (k=2), Naked Triple (k=3), Naked Quad (k=4)
+        const unplacedRegs = [];
+        const unplacedRows = [];
+        const unplacedCols = [];
+        for (let i = 0; i < N; i++) {
+          if (!hasCatReg[i] && regCands[i].length > 0) unplacedRegs.push(i);
+          if (!hasCatRow[i] && rowCands[i].length > 0) unplacedRows.push(i);
+          if (!hasCatCol[i] && colCands[i].length > 0) unplacedCols.push(i);
+        }
+
+        const subsetNames = { 2: 'Naked Pair', 3: 'Naked Triple', 4: 'Naked Quad' };
+
+        for (const k of [2, 3, 4]) {
+          // k colors restricted to k rows or k cols
+          if (unplacedRegs.length > k) {
+            const regCombos = getCombinations(unplacedRegs, k);
+            for (const combo of regCombos) {
+              const comboSet = new Set(combo);
+              const rowsUsed = new Set();
+              const colsUsed = new Set();
+              const secCells = [];
+              for (const reg of combo) {
+                for (const [r, c] of regCands[reg]) {
+                  rowsUsed.add(r);
+                  colsUsed.add(c);
+                  secCells.push([r, c]);
+                }
+              }
+
+              if (rowsUsed.size === k) {
+                const elims = [];
+                for (const row of rowsUsed) {
+                  for (const [r, c] of rowCands[row]) {
+                    if (!comboSet.has(regions[r][c])) elims.push([r, c]);
+                  }
+                }
+                if (elims.length > 0) {
+                  const colorNames = combo.map(id => palette[id].name).join(', ');
+                  const rowNames = [...rowsUsed].sort((a, b) => a - b).map(r => r + 1).join(', ');
+                  return {
+                    ruleName: `${subsetNames[k]} (${k} Colors in ${k} Rows)`,
+                    targets: elims,
+                    secondary: secCells,
+                    text: `${colorNames} are completely confined to Rows ${rowNames}, so mark ✕ on all other colors in those rows.`,
+                    action: { type: 'mark_x', cells: elims }
+                  };
+                }
+              }
+
+              if (colsUsed.size === k) {
+                const elims = [];
+                for (const col of colsUsed) {
+                  for (const [r, c] of colCands[col]) {
+                    if (!comboSet.has(regions[r][c])) elims.push([r, c]);
+                  }
+                }
+                if (elims.length > 0) {
+                  const colorNames = combo.map(id => palette[id].name).join(', ');
+                  const colNames = [...colsUsed].sort((a, b) => a - b).map(c => c + 1).join(', ');
+                  return {
+                    ruleName: `${subsetNames[k]} (${k} Colors in ${k} Cols)`,
+                    targets: elims,
+                    secondary: secCells,
+                    text: `${colorNames} are completely confined to Cols ${colNames}, so mark ✕ on all other colors in those columns.`,
+                    action: { type: 'mark_x', cells: elims }
+                  };
+                }
+              }
+            }
+          }
+
+          // k rows restricted to k colors
+          if (unplacedRows.length > k) {
+            const rowCombos = getCombinations(unplacedRows, k);
+            for (const combo of rowCombos) {
+              const rowSet = new Set(combo);
+              const regsUsed = new Set();
+              const secCells = [];
+              for (const row of combo) {
+                for (const [r, c] of rowCands[row]) {
+                  regsUsed.add(regions[r][c]);
+                  secCells.push([r, c]);
+                }
+              }
+              if (regsUsed.size === k) {
+                const elims = [];
+                for (const reg of regsUsed) {
+                  for (const [r, c] of regCands[reg]) {
+                    if (!rowSet.has(r)) elims.push([r, c]);
+                  }
+                }
+                if (elims.length > 0) {
+                  const rowNames = combo.map(r => r + 1).join(', ');
+                  const colorNames = [...regsUsed].map(id => palette[id].name).join(', ');
+                  return {
+                    ruleName: `${subsetNames[k]} (${k} Rows in ${k} Colors)`,
+                    targets: elims,
+                    secondary: secCells,
+                    text: `Rows ${rowNames} can only use ${colorNames}, so eliminate ${colorNames} outside Rows ${rowNames}.`,
+                    action: { type: 'mark_x', cells: elims }
+                  };
+                }
+              }
+            }
+          }
+
+          // k cols restricted to k colors
+          if (unplacedCols.length > k) {
+            const colCombos = getCombinations(unplacedCols, k);
+            for (const combo of colCombos) {
+              const colSet = new Set(combo);
+              const regsUsed = new Set();
+              const secCells = [];
+              for (const col of combo) {
+                for (const [r, c] of colCands[col]) {
+                  regsUsed.add(regions[r][c]);
+                  secCells.push([r, c]);
+                }
+              }
+              if (regsUsed.size === k) {
+                const elims = [];
+                for (const reg of regsUsed) {
+                  for (const [r, c] of regCands[reg]) {
+                    if (!colSet.has(c)) elims.push([r, c]);
+                  }
+                }
+                if (elims.length > 0) {
+                  const colNames = combo.map(c => c + 1).join(', ');
+                  const colorNames = [...regsUsed].map(id => palette[id].name).join(', ');
+                  return {
+                    ruleName: `${subsetNames[k]} (${k} Cols in ${k} Colors)`,
+                    targets: elims,
+                    secondary: secCells,
+                    text: `Cols ${colNames} can only use ${colorNames}, so eliminate ${colorNames} outside Cols ${colNames}.`,
+                    action: { type: 'mark_x', cells: elims }
+                  };
+                }
+              }
+            }
+          }
+        }
+
+        // RULE 9: 1-Step Contradiction (What-If)
+        function leadsToContradiction(testR, testC) {
+          const sim = board.map(row => row.slice());
+          const simRow = hasCatRow.slice();
+          const simCol = hasCatCol.slice();
+          const simReg = hasCatReg.slice();
+
+          function placeSim(pr, pc) {
+            const preg = regions[pr][pc];
+            sim[pr][pc] = CAT;
+            simRow[pr] = 1;
+            simCol[pc] = 1;
+            simReg[preg] = 1;
+            for (let r = 0; r < N; r++) {
+              for (let c = 0; c < N; c++) {
+                if (sim[r][c] === EMPTY &&
+                    (r === pr || c === pc || regions[r][c] === preg ||
+                     (Math.abs(r - pr) <= 1 && Math.abs(c - pc) <= 1))) {
+                  sim[r][c] = MANUAL_X;
+                }
+              }
+            }
+          }
+
+          placeSim(testR, testC);
+
+          let progress = true;
+          let steps = 0;
+          while (progress && steps < N * 2) {
+            progress = false;
+            steps++;
+
+            // Check any unplaced color/row/col with 0 or 1 open cells
+            const rc = Array.from({ length: N }, () => []);
+            const rwc = Array.from({ length: N }, () => []);
+            const clc = Array.from({ length: N }, () => []);
+
+            for (let r = 0; r < N; r++) {
+              for (let c = 0; c < N; c++) {
+                if (sim[r][c] === EMPTY) {
+                  rc[regions[r][c]].push([r, c]);
+                  rwc[r].push([r, c]);
+                  clc[c].push([r, c]);
+                }
+              }
+            }
+
+            for (let i = 0; i < N; i++) {
+              if (!simReg[i] && rc[i].length === 0) return true;
+              if (!simRow[i] && rwc[i].length === 0) return true;
+              if (!simCol[i] && clc[i].length === 0) return true;
+            }
+
+            for (let i = 0; i < N; i++) {
+              if (!simReg[i] && rc[i].length === 1) {
+                placeSim(rc[i][0][0], rc[i][0][1]);
+                progress = true;
+                break;
+              }
+              if (!simRow[i] && rwc[i].length === 1) {
+                placeSim(rwc[i][0][0], rwc[i][0][1]);
+                progress = true;
+                break;
+              }
+              if (!simCol[i] && clc[i].length === 1) {
+                placeSim(clc[i][0][0], clc[i][0][1]);
+                progress = true;
+                break;
+              }
+            }
+          }
+          return false;
+        }
+
+        for (const [r, c] of allCands) {
+          if (leadsToContradiction(r, c)) {
+            return {
+              ruleName: '1-Step Contradiction',
+              targets: [[r, c]],
+              secondary: [],
+              text: `If you place a Cat at ${formatCell(r, c)} (${palette[regions[r][c]].name}), forced moves lead to a dead end — so ${formatCell(r, c)} must be ✕!`,
+              action: { type: 'mark_x', cells: [[r, c]] }
+            };
+          }
+        }
+
+        return null;
+      }
+
+      /* ==========================================================================
+         UI HELPERS: THEME, SOUND, AUTO-X, FISH LIVES, BANNER
+         ========================================================================== */
       function updateThemeUI() {
         document.documentElement.setAttribute('data-theme', prefs.theme);
         dom.btnTheme.innerHTML = prefs.theme === 'dark'
-          ? `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M4.93 4.93l1.77 1.77M17.3 17.3l1.77 1.77M2 12h2.5M19.5 12H22M4.93 19.07l1.77-1.77M17.3 6.7l1.77-1.77"/></svg>`
+          ? `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M2 12h2.5M19.5 12H22M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>`
           : `<svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>`;
-        // Re-apply tile colors for dark/light theme contrast
         applyTileThemeColors();
       }
 
       function updateSoundUI() {
         dom.btnSound.innerHTML = prefs.muted
-          ? `<svg viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="22" y1="9" x2="16" y2="15"/><line x1="16" y1="9" x2="22" y2="15"/></svg>`
-          : `<svg viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg>`;
+          ? `<svg viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M23 9l-6 6M17 9l6 6"/></svg>`
+          : `<svg viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.8 5.2a9.5 9.5 0 0 1 0 13.6"/></svg>`;
       }
 
       function updateAutoXUI() {
@@ -2483,30 +2534,37 @@
         dom.btnAutoX.setAttribute('aria-pressed', String(prefs.autoX));
       }
 
-      function renderFishLives(lostIndex = -1) {
+      function renderFishLives(losingIndex = -1) {
         let html = '';
         for (let i = 0; i < MAX_LIVES; i++) {
           const isLost = i >= state.lives;
-          const isLosing = i === lostIndex;
+          const isLosing = i === losingIndex;
           html += getFishSVG(isLost, isLosing);
         }
         dom.fishLives.innerHTML = html;
       }
 
-      function setBanner(text, type = 'default', dismissible = false, showApply = false) {
-        dom.statusBanner.className = 'status-banner' + (type !== 'default' ? ` ${type}` : '');
+      function setBanner(text, variant = 'default', showClose = false, showApply = false, ruleTag = '') {
+        dom.statusBanner.className = 'status-banner' + (variant !== 'default' ? ` ${variant}` : '');
         dom.statusText.textContent = text;
-        dom.btnCloseBanner.style.display = dismissible ? 'inline-block' : 'none';
+        dom.btnCloseBanner.style.display = showClose ? 'inline-block' : 'none';
         dom.btnApplyHint.style.display = showApply ? 'inline-block' : 'none';
+        if (ruleTag) {
+          dom.hintRuleTag.textContent = ruleTag;
+          dom.hintRuleTag.style.display = 'inline-block';
+        } else {
+          dom.hintRuleTag.style.display = 'none';
+        }
       }
 
       function resetBanner() {
-        setBanner('Tap once for ✕, tap again to place a Cat. Drag to mark ✕!', 'default', false, false);
+        setBanner(DEFAULT_BANNER_TEXT, 'default', false, false, '');
       }
 
       function clearActiveHint() {
         state.activeHint = null;
         dom.btnApplyHint.style.display = 'none';
+        dom.hintRuleTag.style.display = 'none';
       }
 
       function clearGuardHighlights() {
@@ -2534,6 +2592,7 @@
           if (!state.paused && !state.solved && !state.outOfFish) {
             state.seconds++;
             dom.timerDisplay.textContent = formatTime(state.seconds);
+            if (state.seconds % 5 === 0) saveGameState();
           }
         }, 1000);
       }
@@ -2553,61 +2612,152 @@
             if (state.board[r][c] === CAT) catCount++;
           }
         }
-        dom.levelBadge.textContent = `Level ${prefs.level}`;
         dom.catFoundNum.textContent = String(catCount);
         dom.catTotalNum.textContent = String(state.N);
-        dom.solvedDisplay.textContent = String(prefs.solvedTotal);
+        const curLevel = prefs.levelsByMode[state.mode] || 1;
+        dom.levelDisplay.textContent = state.mode === 'daily' ? 'Daily' : String(curLevel);
+        dom.mistakesDisplay.textContent = String(state.mistakes);
+        dom.mistakesDisplay.classList.toggle('has-mistakes', state.mistakes > 0);
+
+        const bestSec = prefs.bestTimes[state.mode];
+        const bestStr = typeof bestSec === 'number' ? formatTime(bestSec) : '--:--';
+        dom.footerBest.textContent = `Best: ${bestStr} · Solved: ${prefs.solvedTotal}`;
         dom.btnUndo.disabled = state.undoStack.length === 0 || state.solved || state.outOfFish;
       }
 
       /* ==========================================================================
-         START NEW PUZZLE (ASYNC) & RETRY SAME BOARD
+         AUTO-SAVE & RESTORE FULL GAME STATE
          ========================================================================== */
-      function startNewGame(size = state.N) {
-        state.N = size;
-        prefs.boardSize = size;
-        saveStorage();
+      function saveGameState() {
+        try {
+          if (!state.regions.length || !state.board.length) return;
+          const payload = {
+            mode: state.mode,
+            N: state.N,
+            regions: state.regions,
+            solutionCols: state.solutionCols,
+            paletteNames: state.palette.map(p => p.name),
+            board: state.board,
+            lives: state.lives,
+            mistakes: state.mistakes,
+            solved: state.solved,
+            outOfFish: state.outOfFish,
+            seconds: state.seconds,
+            dailyDate: state.mode === 'daily' ? getDailyDateStr() : null
+          };
+          localStorage.setItem(STATE_KEY, JSON.stringify(payload));
+        } catch (_) {}
+      }
 
-        state.solved = false;
-        state.outOfFish = false;
-        state.lives = MAX_LIVES;
-        state.seconds = 0;
-        state.paused = false;
-        clearActiveHint();
-        clearGuardHighlights();
-        stopTimer();
+      function loadSavedGameState() {
+        try {
+          const raw = localStorage.getItem(STATE_KEY);
+          if (!raw) return false;
+          const saved = JSON.parse(raw);
+          if (!saved || !Array.isArray(saved.regions) || !Array.isArray(saved.board) || !Array.isArray(saved.solutionCols)) {
+            return false;
+          }
+          const N = Number(saved.N);
+          if (N < 6 || N > 10 || saved.regions.length !== N || saved.board.length !== N) return false;
+          if (saved.mode === 'daily' && saved.dailyDate !== getDailyDateStr()) return false;
 
-        dom.sizeBtns.forEach(btn => {
-          btn.classList.toggle('active', Number(btn.dataset.size) === size);
-        });
+          const palette = (saved.paletteNames || []).map(name =>
+            REGION_PALETTE.find(p => p.name === name)
+          );
+          if (palette.length !== N || palette.some(p => !p)) return false;
 
-        dom.puzzleSubtitle.textContent = `${size}×${size} · Pure Logic · Unique Solution`;
-        dom.timerDisplay.textContent = '00:00';
-        renderFishLives();
-        dom.loadingLabel.textContent = `Generating ${size}×${size} puzzle...`;
-        dom.boardLoading.classList.add('visible');
+          state.mode = String(saved.mode || N);
+          state.N = N;
+          state.regions = saved.regions;
+          state.solutionCols = saved.solutionCols;
+          state.palette = palette;
+          initBoardArrays(N);
+          state.board = saved.board.map(row => row.slice());
+          rebuildAllAutoX();
+          state.lives = typeof saved.lives === 'number' ? saved.lives : MAX_LIVES;
+          state.mistakes = Number(saved.mistakes) || 0;
+          state.solved = Boolean(saved.solved);
+          state.outOfFish = Boolean(saved.outOfFish);
+          state.seconds = Number(saved.seconds) || 0;
+          state.paused = false;
 
-        generatePuzzleAsync(size, (puzzle) => {
-          state.regions = puzzle.regions;
-          state.solutionCols = puzzle.solutionCols;
-          state.palette = puzzle.palette;
-          initBoardArrays(size);
+          dom.modeBtns.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.mode === state.mode);
+          });
+          dom.puzzleSubtitle.textContent = state.mode === 'daily'
+            ? `Daily ${getDailyDateStr()} · 8×8 · Unique Solution`
+            : `${N}×${N} · Pure Logic · Unique Solution`;
+          dom.timerDisplay.textContent = formatTime(state.seconds);
 
-          dom.boardLoading.classList.remove('visible');
+          renderFishLives();
           buildGridDOM();
           renderBoard();
           updateStatsUI();
           resetBanner();
-          startTimer();
+          if (!state.solved && !state.outOfFish) startTimer();
+          return true;
+        } catch (_) {
+          return false;
+        }
+      }
+
+      /* ==========================================================================
+         START NEW PUZZLE & RETRY BOARD
+         ========================================================================== */
+      function startNewGame(mode = state.mode) {
+        state.mode = String(mode);
+        const isDaily = state.mode === 'daily';
+        const size = isDaily ? 8 : Number(state.mode);
+        state.N = size;
+        prefs.mode = state.mode;
+        savePrefs();
+
+        state.solved = false;
+        state.outOfFish = false;
+        state.lives = MAX_LIVES;
+        state.mistakes = 0;
+        state.seconds = 0;
+        state.paused = false;
+        resetLastTap();
+        clearActiveHint();
+        clearGuardHighlights();
+        stopTimer();
+
+        dom.modeBtns.forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.mode === state.mode);
         });
+
+        const dateStr = getDailyDateStr();
+        dom.puzzleSubtitle.textContent = isDaily
+          ? `Daily ${dateStr} · 8×8 · Unique Solution`
+          : `${size}×${size} · Pure Logic · Unique Solution`;
+        dom.timerDisplay.textContent = '00:00';
+
+        const seedOverride = isDaily ? hashString(`meowdoku-v1.3-daily-${dateStr}`) : null;
+        const puzzle = generatePuzzleFast(size, seedOverride);
+
+        state.regions = puzzle.regions;
+        state.solutionCols = puzzle.solutionCols;
+        state.palette = puzzle.palette;
+        initBoardArrays(size);
+
+        renderFishLives();
+        buildGridDOM();
+        renderBoard();
+        updateStatsUI();
+        resetBanner();
+        saveGameState();
+        startTimer();
       }
 
       function retryCurrentBoard() {
         state.solved = false;
         state.outOfFish = false;
         state.lives = MAX_LIVES;
+        state.mistakes = 0;
         state.seconds = 0;
         state.paused = false;
+        resetLastTap();
         clearActiveHint();
         clearGuardHighlights();
         initBoardArrays(state.N);
@@ -2616,6 +2766,7 @@
         renderBoard();
         updateStatsUI();
         resetBanner();
+        saveGameState();
         startTimer();
       }
 
@@ -2635,12 +2786,14 @@
         const snap = state.undoStack.pop();
         state.board = snap.board;
         state.autoOwners = snap.autoOwners;
+        resetLastTap();
         clearActiveHint();
         clearGuardHighlights();
         resetBanner();
         Sound.pop(300);
         renderBoard();
         updateStatsUI();
+        saveGameState();
       }
 
       function getBlockedCellsForCat(cr, cc) {
@@ -2664,9 +2817,7 @@
         const key = `${cr},${cc}`;
         for (const [r, c] of getBlockedCellsForCat(cr, cc)) {
           state.autoOwners[r][c].add(key);
-          if (state.board[r][c] === EMPTY) {
-            state.board[r][c] = AUTO_X;
-          }
+          if (state.board[r][c] === EMPTY) state.board[r][c] = AUTO_X;
         }
       }
 
@@ -2687,7 +2838,7 @@
       }
 
       /* ==========================================================================
-         INSTANT WRONG-CAT GUARD WITH 3 FISH LIVES
+         INSTANT WRONG-CAT GUARD & 3 FISH LIVES
          ========================================================================== */
       function validateCatPlacement(r, c) {
         const N = state.N;
@@ -2695,7 +2846,6 @@
         const conflictingCats = [];
         let message = '';
 
-        // 1. Direct rule conflict with already-placed cat(s)
         for (let cr = 0; cr < N; cr++) {
           for (let cc = 0; cc < N; cc++) {
             if (state.board[cr][cc] !== CAT) continue;
@@ -2709,17 +2859,11 @@
             if (sameRow || sameCol || sameReg || touching) {
               conflictingCats.push([cr, cc]);
               if (!message) {
-                if (sameRow) {
-                  message = `Conflict: Another cat is already in Row ${r + 1}! (−1 Fish)`;
-                } else if (sameCol) {
-                  message = `Conflict: Another cat is already in Col ${c + 1}! (−1 Fish)`;
-                } else if (sameReg) {
-                  message = `Conflict: Another cat is already in ${state.palette[reg].name}! (−1 Fish)`;
-                } else if (dr === 1 && dc === 1) {
-                  message = `Conflict: Cats cannot touch diagonally! (−1 Fish)`;
-                } else {
-                  message = `Conflict: Cats cannot touch orthogonally! (−1 Fish)`;
-                }
+                if (sameRow) message = `Conflict: Another cat is already in Row ${r + 1}! (−1 Fish)`;
+                else if (sameCol) message = `Conflict: Another cat is already in Col ${c + 1}! (−1 Fish)`;
+                else if (sameReg) message = `Conflict: Another cat is already in ${state.palette[reg].name}! (−1 Fish)`;
+                else if (dr === 1 && dc === 1) message = `Conflict: Cats cannot touch diagonally! (−1 Fish)`;
+                else message = `Conflict: Cats cannot touch orthogonally! (−1 Fish)`;
               }
             }
           }
@@ -2729,11 +2873,10 @@
           return { allowed: false, message, conflictingCats };
         }
 
-        // 2. Wrong cell vs. puzzle's unique solution
         if (state.solutionCols[r] !== c) {
           return {
             allowed: false,
-            message: `Wrong cell! A cat does not belong here. (−1 Fish)`,
+            message: 'Wrong cell! That breaks the unique solution. (−1 Fish)',
             conflictingCats: []
           };
         }
@@ -2744,6 +2887,7 @@
       function triggerWrongCatBlock(r, c, message, conflictingCats) {
         const lostFishIdx = state.lives - 1;
         state.lives = Math.max(0, state.lives - 1);
+        state.mistakes++;
         Sound.errorBuzz();
         clearActiveHint();
         clearGuardHighlights();
@@ -2759,20 +2903,17 @@
           catEl.classList.add('conflict-flash');
         }
 
-        setBanner(`⚠️ ${message}`, 'error', true, false);
+        setBanner(`⚠️ ${message}`, 'error', true, false, '');
         updateStatsUI();
 
-        state.guardTimer = setTimeout(() => {
-          clearGuardHighlights();
-        }, 1150);
+        state.guardTimer = setTimeout(() => clearGuardHighlights(), 1150);
 
         if (state.lives === 0) {
           state.outOfFish = true;
           updateStatsUI();
-          setTimeout(() => {
-            dom.outOfFishModal.classList.add('open');
-          }, 420);
+          setTimeout(() => dom.outOfFishModal.classList.add('open'), 420);
         }
+        saveGameState();
       }
 
       /* ==========================================================================
@@ -2805,48 +2946,61 @@
         Sound.victory();
         launchConfetti();
 
-        const completedLevel = prefs.level;
-        prefs.level++;
+        const curLevel = prefs.levelsByMode[state.mode] || 1;
+        const completedLabel = state.mode === 'daily'
+          ? `Daily (${getDailyDateStr()})`
+          : `Level ${curLevel}`;
+
+        if (state.mode !== 'daily') {
+          prefs.levelsByMode[state.mode] = curLevel + 1;
+        }
         prefs.solvedTotal++;
-        saveStorage();
+
+        const prevBest = prefs.bestTimes[state.mode];
+        if (typeof prevBest !== 'number' || state.seconds < prevBest) {
+          prefs.bestTimes[state.mode] = state.seconds;
+        }
+        savePrefs();
+        saveGameState();
         updateStatsUI();
 
-        setBanner(`Purr-fect! Level ${completedLevel} solved in ${formatTime(state.seconds)} 🎉`, 'success', false, false);
+        setBanner(`Purr-fect! ${completedLabel} solved in ${formatTime(state.seconds)} 🎉`, 'success', false, false, '');
 
-        dom.victorySubtitle.textContent = `You solved Level ${completedLevel} (${state.N}×${state.N})!`;
-        dom.vLevel.textContent = String(completedLevel);
+        dom.victorySubtitle.textContent = `You solved ${completedLabel} (${state.N}×${state.N})!`;
         dom.vTime.textContent = formatTime(state.seconds);
-        dom.vFish.textContent = `${state.lives} / ${MAX_LIVES}`;
+        dom.vMistakes.textContent = String(state.mistakes);
+        dom.vBest.textContent = formatTime(prefs.bestTimes[state.mode]);
+        dom.btnNextLevel.textContent = state.mode === 'daily' ? 'Play 8×8 Level' : 'Next Level';
 
-        setTimeout(() => {
-          dom.victoryModal.classList.add('open');
-        }, 420);
+        setTimeout(() => dom.victoryModal.classList.add('open'), 420);
       }
 
       /* ==========================================================================
-         HINT CONTROLLER (8-RULE ENGINE + 1-TAP APPLY)
+         HINT CONTROLLER (9 DEDUCTIVE RULES + 1-TAP APPLY)
          ========================================================================== */
       function computeTrueHint() {
         const N = state.N;
 
-        // RULE 1: Check if player mistakenly placed X on a true solution cat cell
+        // RULE 1: Error Check (user marked X on a solution cell)
         for (let r = 0; r < N; r++) {
           const c = state.solutionCols[r];
           if (state.board[r][c] === MANUAL_X || state.board[r][c] === AUTO_X) {
             return {
+              ruleName: 'Error Check',
               targets: [[r, c]],
               secondary: [],
-              text: `Wrong ✕ at ${formatCell(r, c)} (${state.palette[state.regions[r][c]].name})! Remove this ✕ to continue.`,
+              text: `Wrong ✕ at ${formatCell(r, c)} (${state.palette[state.regions[r][c]].name}) — this ✕ blocks a required Cat! Remove it.`,
               action: { type: 'clear_cell', cells: [[r, c]] }
             };
           }
         }
 
-        // RULES 2–8: Genuine Human Deductions
+        // RULES 2-9: Human Deductive Solver
         const step = findNextLogicalStep(N, state.regions, state.board, state.palette);
         if (step) return step;
 
         return {
+          ruleName: 'Logic Tip',
           targets: [],
           secondary: [],
           text: 'Mark a few more ✕ eliminations around small color regions, then tap Hint again!',
@@ -2860,13 +3014,14 @@
         const hint = computeTrueHint();
         state.activeHint = hint;
         Sound.hint();
-        setBanner('💡 ' + hint.text, 'hint', true, Boolean(hint.action));
+        setBanner('💡 ' + hint.text, 'hint', true, Boolean(hint.action), hint.ruleName || '');
         renderBoard();
       }
 
       function applyActiveHint() {
         if (!state.activeHint || !state.activeHint.action || state.solved || state.outOfFish) return;
         const { type, cells } = state.activeHint.action;
+        resetLastTap();
         pushUndoSnapshot();
         clearActiveHint();
 
@@ -2874,21 +3029,20 @@
           const [r, c] = cells[0];
           state.board[r][c] = CAT;
           applyAutoXForCat(r, c);
-          Sound.catPurr();
+          Sound.catChime();
         } else if (type === 'mark_x') {
           for (const [r, c] of cells) {
             if (state.board[r][c] === EMPTY) state.board[r][c] = MANUAL_X;
           }
           Sound.pop(460);
         } else if (type === 'clear_cell') {
-          for (const [r, c] of cells) {
-            state.board[r][c] = EMPTY;
-          }
+          for (const [r, c] of cells) state.board[r][c] = EMPTY;
           Sound.pop(310);
         }
 
         resetBanner();
         renderBoard();
+        saveGameState();
       }
 
       /* ==========================================================================
@@ -2930,10 +3084,9 @@
             tile.setAttribute('role', 'gridcell');
             tile.setAttribute('aria-label', `Row ${r + 1} Column ${c + 1}, ${p.name}`);
 
-            // Persistent Embossed Background Pattern + Dynamic Content Layer
             tile.innerHTML = `
               <svg class="tile-pattern" viewBox="0 0 24 24" aria-hidden="true">${p.pattern}</svg>
-              <span class="tile-layer" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;"></span>
+              <span class="tile-layer"></span>
             `;
 
             dom.boardGrid.appendChild(tile);
@@ -2981,7 +3134,7 @@
       }
 
       /* ==========================================================================
-         POINTER INTERACTION: TAP CYCLE (Empty -> X -> Cat) + DRAG-TO-MARK X
+         POINTER INTERACTION: ZERO-LAG SINGLE TAP X + SUDDEN DOUBLE-TAP CAT + DRAG
          ========================================================================== */
       const pointer = {
         active: false,
@@ -2992,6 +3145,12 @@
         lastKey: '',
         snapshotTaken: false
       };
+
+      let lastTap = null;
+
+      function resetLastTap() {
+        lastTap = null;
+      }
 
       function getTileCoordsFromPoint(x, y) {
         const el = document.elementFromPoint(x, y);
@@ -3013,6 +3172,7 @@
           state.board[r][c] = MANUAL_X;
           Sound.pop(440);
           renderBoard();
+          saveGameState();
         } else if (pointer.paintMode === EMPTY && val === MANUAL_X) {
           if (!pointer.snapshotTaken) {
             pushUndoSnapshot();
@@ -3021,6 +3181,7 @@
           state.board[r][c] = EMPTY;
           Sound.pop(300);
           renderBoard();
+          saveGameState();
         }
       }
 
@@ -3028,8 +3189,9 @@
         if (state.solved || state.outOfFish) return;
         const current = state.board[r][c];
 
-        // Confirmed Cats are safely locked (happy nod feedback)
+        // Confirmed Cats are safely locked
         if (current === CAT) {
+          resetLastTap();
           const tile = tileEls[r][c];
           tile.classList.remove('cat-locked-tap');
           void tile.offsetWidth;
@@ -3038,35 +3200,76 @@
           return;
         }
 
-        // Tap 1: Empty -> X
-        if (current === EMPTY) {
-          clearActiveHint();
-          clearGuardHighlights();
-          resetBanner();
-          pushUndoSnapshot();
-          state.board[r][c] = MANUAL_X;
-          Sound.pop(430);
-          renderBoard();
-          return;
-        }
+        const now = performance.now();
+        const isSuddenDoubleTap = Boolean(
+          lastTap &&
+          lastTap.r === r &&
+          lastTap.c === c &&
+          (now - lastTap.time) <= DOUBLE_TAP_MS
+        );
 
-        // Tap 2: X / Auto-X -> Attempt Cat Placement (Guarded!)
-        if (current === MANUAL_X || current === AUTO_X) {
+        // SUDDEN DOUBLE-TAP (within 320ms on the same unlocked tile) -> Attempt Cat Placement
+        if (isSuddenDoubleTap) {
+          const prevTap = lastTap;
+          resetLastTap();
+
+          // Pop intermediate first-tap snapshot so Undo and revert remain pristine
+          let preTapSnap = null;
+          if (prevTap.hadUndo && state.undoStack.length > 0) {
+            preTapSnap = state.undoStack.pop();
+          }
+
           const check = validateCatPlacement(r, c);
           if (!check.allowed) {
+            // Cleanly revert to pre-first-tap state (no leftover accidental X)
+            if (preTapSnap) {
+              state.board = preTapSnap.board;
+              state.autoOwners = preTapSnap.autoOwners;
+            } else {
+              state.board[r][c] = prevTap.prevState;
+            }
+            renderBoard();
             triggerWrongCatBlock(r, c, check.message, check.conflictingCats);
             return;
+          }
+
+          // Valid Cat Placement: keep clean pre-tap snapshot for Undo
+          if (preTapSnap) {
+            state.undoStack.push(preTapSnap);
+            dom.btnUndo.disabled = false;
+          } else {
+            pushUndoSnapshot();
           }
 
           clearActiveHint();
           clearGuardHighlights();
           resetBanner();
-          pushUndoSnapshot();
           state.board[r][c] = CAT;
           applyAutoXForCat(r, c);
-          Sound.catPurr();
+          Sound.catChime();
           renderBoard();
+          saveGameState();
+          return;
         }
+
+        // SINGLE TAP (Zero Lag): Immediately toggle EMPTY <-> X
+        const prevState = current;
+        clearActiveHint();
+        clearGuardHighlights();
+        resetBanner();
+        pushUndoSnapshot();
+
+        if (prevState === EMPTY) {
+          state.board[r][c] = MANUAL_X;
+          Sound.pop(430);
+        } else {
+          state.board[r][c] = EMPTY;
+          Sound.pop(310);
+        }
+
+        lastTap = { r, c, time: now, prevState, hadUndo: true };
+        renderBoard();
+        saveGameState();
       }
 
       dom.boardGrid.addEventListener('pointerdown', (e) => {
@@ -3099,6 +3302,7 @@
 
         if (!pointer.dragging) {
           pointer.dragging = true;
+          resetLastTap();
           clearActiveHint();
           clearGuardHighlights();
           resetBanner();
@@ -3135,7 +3339,7 @@
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        const colors = ['#38A3B8', '#F48FB1', '#8E7CC3', '#F6D576', '#F59B56', '#81C784'];
+        const colors = ['#3AA6B9', '#F699CD', '#8E7CC3', '#FDE073', '#FFA95E', '#8CE08A'];
         const particles = Array.from({ length: 120 }, () => ({
           x: canvas.width * (0.2 + Math.random() * 0.6),
           y: canvas.height * 0.35 + (Math.random() - 0.5) * 60,
@@ -3184,12 +3388,12 @@
       }
 
       /* ==========================================================================
-         EVENT LISTENERS & INITIALIZATION
+         CONTROL EVENT LISTENERS & IMMEDIATE BOOTSTRAP
          ========================================================================== */
-      dom.sizeBtns.forEach(btn => {
+      dom.modeBtns.forEach(btn => {
         btn.addEventListener('click', () => {
           Sound.pop(500);
-          startNewGame(Number(btn.dataset.size));
+          startNewGame(btn.dataset.mode);
         });
       });
 
@@ -3197,12 +3401,14 @@
 
       dom.btnAutoX.addEventListener('click', () => {
         prefs.autoX = !prefs.autoX;
-        saveStorage();
+        savePrefs();
         updateAutoXUI();
         if (!state.solved && !state.outOfFish) {
+          resetLastTap();
           pushUndoSnapshot();
           rebuildAllAutoX();
           renderBoard();
+          saveGameState();
         }
         Sound.pop(prefs.autoX ? 520 : 340);
       });
@@ -3210,27 +3416,32 @@
       dom.btnHint.addEventListener('click', triggerHint);
       dom.btnApplyHint.addEventListener('click', applyActiveHint);
 
+      // Clear non-locked X marks (keeps locked Cats safe & restores Auto-X around them)
       dom.btnClear.addEventListener('click', () => {
         if (state.solved || state.outOfFish) return;
-        const hasAny = state.board.some(row => row.some(v => v !== EMPTY));
-        if (!hasAny) return;
+        const hasManualX = state.board.some(row => row.some(v => v === MANUAL_X));
+        if (!hasManualX) return;
+        resetLastTap();
         pushUndoSnapshot();
         clearActiveHint();
         clearGuardHighlights();
         for (let r = 0; r < state.N; r++) {
           for (let c = 0; c < state.N; c++) {
-            state.board[r][c] = EMPTY;
-            state.autoOwners[r][c].clear();
+            if (state.board[r][c] === MANUAL_X) {
+              state.board[r][c] = EMPTY;
+            }
           }
         }
+        rebuildAllAutoX();
         Sound.pop(280);
         resetBanner();
         renderBoard();
+        saveGameState();
       });
 
       dom.btnNew.addEventListener('click', () => {
         Sound.pop(480);
-        startNewGame(state.N);
+        startNewGame(state.mode === 'daily' ? '8' : state.mode);
       });
 
       dom.btnCloseBanner.addEventListener('click', () => {
@@ -3242,14 +3453,14 @@
 
       dom.btnTheme.addEventListener('click', () => {
         prefs.theme = prefs.theme === 'dark' ? 'light' : 'dark';
-        saveStorage();
+        savePrefs();
         updateThemeUI();
         Sound.pop(460);
       });
 
       dom.btnSound.addEventListener('click', () => {
         prefs.muted = !prefs.muted;
-        saveStorage();
+        savePrefs();
         updateSoundUI();
         if (!prefs.muted) Sound.pop(520);
       });
@@ -3262,15 +3473,15 @@
       dom.btnGotIt.addEventListener('click', closeHelp);
       dom.helpModal.addEventListener('click', (e) => { if (e.target === dom.helpModal) closeHelp(); });
 
-      // Out of Fish Modal Actions
       dom.btnRefillFish.addEventListener('click', () => {
         dom.outOfFishModal.classList.remove('open');
         state.lives = 1;
         state.outOfFish = false;
         renderFishLives();
         updateStatsUI();
-        setBanner('🐟 Refilled 1 Fish Life! Take your time and use Hint if needed.', 'success', true, false);
-        Sound.catPurr();
+        setBanner('🐠 Refilled 1 Fish Life! Take your time and use Hint if needed.', 'success', true, false, '');
+        Sound.catChime();
+        saveGameState();
       });
 
       dom.btnRetryBoard.addEventListener('click', () => {
@@ -3279,11 +3490,10 @@
         retryCurrentBoard();
       });
 
-      // Victory Modal Actions
       dom.btnNextLevel.addEventListener('click', () => {
         dom.victoryModal.classList.remove('open');
         Sound.pop(520);
-        startNewGame(state.N);
+        startNewGame(state.mode === 'daily' ? '8' : state.mode);
       });
 
       dom.btnAdmireBoard.addEventListener('click', () => dom.victoryModal.classList.remove('open'));
@@ -3298,12 +3508,25 @@
         }
       });
 
-      window.addEventListener('load', () => {
-        updateThemeUI();
-        updateSoundUI();
-        updateAutoXUI();
-        startNewGame(prefs.boardSize || 8);
-      });
+      function initApp() {
+        try {
+          updateThemeUI();
+          updateSoundUI();
+          updateAutoXUI();
+          if (!loadSavedGameState()) {
+            startNewGame(prefs.mode || '8');
+          }
+        } catch (err) {
+          console.error('Meowdoku v1.3 init error:', err);
+          startNewGame('8');
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initApp);
+      } else {
+        initApp();
+      }
     })();
   </script>
 </body>
