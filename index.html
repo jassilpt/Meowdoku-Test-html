@@ -1,0 +1,3311 @@
+```html
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Meowdoku — Cozy Cat Logic Puzzle</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ==========================================================================
+       DESIGN TOKENS & THEME VARIABLES (Authentic Cozy Meowdoku Palette)
+       ========================================================================== */
+    :root {
+      --bg-page: #FAF6F0;
+      --bg-surface: #FFFFFF;
+      --bg-surface-soft: #F3ECE2;
+      --bg-surface-hover: #EAE0D3;
+      --board-bg: #FFFFFF;
+      --text-primary: #3B2B26;
+      --text-secondary: #75625A;
+      --text-muted: #A18F86;
+      --accent: #E07A5F;
+      --accent-hover: #CC654A;
+      --accent-soft: rgba(224, 122, 95, 0.14);
+      --success: #2F8F63;
+      --success-soft: rgba(47, 143, 99, 0.14);
+      --danger: #D93838;
+      --danger-soft: rgba(217, 56, 56, 0.14);
+      --danger-ring: #E03E3E;
+      --hint-bg: #FFF9E6;
+      --hint-border: #E8B84B;
+      --hint-text: #5E3F07;
+      --hint-btn-bg: #E0911F;
+      --hint-btn-hover: #C87D12;
+
+      --border-subtle: rgba(59, 43, 38, 0.09);
+      --shadow-sm: 0 2px 8px rgba(59, 43, 38, 0.06);
+      --shadow-md: 0 8px 24px rgba(59, 43, 38, 0.08);
+      --shadow-lg: 0 18px 44px rgba(59, 43, 38, 0.18);
+
+      /* Tile Marks (Crisp Solid-White X directly on colored tile) */
+      --mark-color: #FFFFFF;
+      --mark-shadow: rgba(0, 0, 0, 0.18);
+      --mark-auto-opacity: 0.9;
+    }
+
+    [data-theme="dark"] {
+      --bg-page: #171412;
+      --bg-surface: #231F1D;
+      --bg-surface-soft: #2E2825;
+      --bg-surface-hover: #3B3430;
+      --board-bg: #1E1A18;
+      --text-primary: #F6F0E8;
+      --text-secondary: #BEB2A8;
+      --text-muted: #8C7F76;
+      --accent: #F29577;
+      --accent-hover: #F5AA90;
+      --accent-soft: rgba(242, 149, 119, 0.18);
+      --success: #5AC993;
+      --success-soft: rgba(90, 201, 147, 0.18);
+      --danger: #FF6E6E;
+      --danger-soft: rgba(255, 110, 110, 0.18);
+      --danger-ring: #FF5C5C;
+      --hint-bg: #332917;
+      --hint-border: #B5872D;
+      --hint-text: #FCE6A8;
+      --hint-btn-bg: #D99A26;
+      --hint-btn-hover: #E6AA38;
+
+      --border-subtle: rgba(246, 240, 232, 0.1);
+      --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.32);
+      --shadow-md: 0 10px 28px rgba(0, 0, 0, 0.45);
+      --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.65);
+
+      --mark-color: #FFFFFF;
+      --mark-shadow: rgba(0, 0, 0, 0.24);
+      --mark-auto-opacity: 0.9;
+    }
+
+    /* ==========================================================================
+       BASE & LAYOUT
+       ========================================================================== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      min-height: 100%;
+      width: 100%;
+      overflow-x: hidden;
+      background-color: var(--bg-page);
+      color: var(--text-primary);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100dvh;
+      padding: 10px 12px 16px;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 468px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* ==========================================================================
+       HEADER BAR
+       ========================================================================== */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 13px;
+      background: linear-gradient(135deg, #E07A5F, #F4A261);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(224, 122, 95, 0.28);
+      flex-shrink: 0;
+    }
+
+    .brand-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .brand-title-row {
+      display: flex;
+      align-items: baseline;
+      gap: 7px;
+    }
+
+    .brand-text h1 {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.42rem;
+      line-height: 1.05;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .level-pill {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--accent-soft);
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    .brand-subtitle {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-top: 2px;
+      display: block;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .icon-btn {
+      width: 37px;
+      height: 37px;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.14s ease, background-color 0.2s ease;
+    }
+
+    .icon-btn:hover { background: var(--bg-surface-soft); }
+    .icon-btn:active { transform: scale(0.92); }
+
+    .icon-btn svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2.1;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* ==========================================================================
+       BOARD SIZE SELECTOR TABS (6x6 to 10x10)
+       ========================================================================== */
+    .size-bar {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 5px;
+      background: var(--bg-surface-soft);
+      padding: 4px;
+      border-radius: 14px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .size-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 7px 4px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .size-btn.active {
+      background: var(--bg-surface);
+      color: var(--accent);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* ==========================================================================
+       STATUS STRIP (Cat Counter, 3 Fish Lives, Timer, Solved)
+       ========================================================================== */
+    .status-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 15px;
+      padding: 7px 11px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .cat-counter-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-surface-soft);
+      padding: 4px 10px 4px 7px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.84rem;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-primary);
+    }
+
+    .cat-counter-pill svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .cat-count-num {
+      color: var(--success);
+    }
+
+    .fish-lives {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      background: var(--bg-surface-soft);
+      padding: 4px 9px;
+      border-radius: 999px;
+    }
+
+    .fish-icon {
+      width: 21px;
+      height: 21px;
+      transition: transform 0.25s ease, filter 0.3s ease, opacity 0.3s ease;
+    }
+
+    .fish-icon.lost {
+      filter: grayscale(1);
+      opacity: 0.26;
+      transform: scale(0.86);
+    }
+
+    .fish-icon.losing {
+      animation: fishLostShake 0.45s ease;
+    }
+
+    .mini-stats {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .mini-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      line-height: 1.1;
+    }
+
+    .mini-stat-lbl {
+      font-size: 0.59rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: var(--text-muted);
+    }
+
+    .mini-stat-val {
+      font-size: 0.8rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-primary);
+      margin-top: 1px;
+    }
+
+    /* ==========================================================================
+       COMPACT 3-PART RULES STRIP
+       ========================================================================== */
+    .rules-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 6px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .rule-pill {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      background: var(--bg-surface-soft);
+      border-radius: 10px;
+      padding: 5px 6px;
+      font-size: 0.67rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .rule-pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ==========================================================================
+       STATUS / HINT / WARNING BANNER
+       ========================================================================== */
+    .banner-slot {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+    }
+
+    .status-banner {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 11px;
+      border-radius: 13px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      line-height: 1.35;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      color: var(--text-secondary);
+      transition: all 0.2s ease;
+    }
+
+    .status-banner.hint {
+      background: var(--hint-bg);
+      border-color: var(--hint-border);
+      color: var(--hint-text);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .status-banner.error {
+      background: var(--danger-soft);
+      border-color: var(--danger);
+      color: var(--danger);
+      font-weight: 700;
+    }
+
+    .status-banner.success {
+      background: var(--success-soft);
+      border-color: var(--success);
+      color: var(--success);
+      font-weight: 700;
+    }
+
+    .banner-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .banner-apply-btn {
+      border: none;
+      background: var(--hint-btn-bg);
+      color: #FFFFFF;
+      font-family: inherit;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 6px 10px;
+      border-radius: 9px;
+      cursor: pointer;
+      white-space: nowrap;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.14);
+      transition: transform 0.12s ease, background-color 0.15s ease;
+    }
+
+    .banner-apply-btn:hover { background: var(--hint-btn-hover); }
+    .banner-apply-btn:active { transform: scale(0.94); }
+
+    .banner-close {
+      border: none;
+      background: transparent;
+      color: inherit;
+      font-size: 1.15rem;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 2px 4px;
+      opacity: 0.75;
+    }
+
+    /* ==========================================================================
+       AUTHENTIC MEOWDOKU ROUNDED TILE BOARD (Clean White Gaps, No Thick Borders)
+       ========================================================================== */
+    .board-card {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      max-width: 444px;
+      margin: 0 auto;
+      background: var(--board-bg);
+      padding: 8px;
+      border-radius: 20px;
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-md);
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
+
+    .board-grid {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      gap: 3.5px;
+    }
+
+    .board-grid.size-9 { gap: 3px; }
+    .board-grid.size-10 { gap: 2.5px; }
+
+    .tile {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9px;
+      cursor: pointer;
+      overflow: hidden;
+      transition: transform 0.1s ease, filter 0.12s ease;
+      box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    }
+
+    .board-grid.size-8 .tile { border-radius: 8px; }
+    .board-grid.size-9 .tile { border-radius: 7px; }
+    .board-grid.size-10 .tile { border-radius: 6.5px; }
+
+    @media (hover: hover) {
+      .tile:hover { filter: brightness(1.04); }
+    }
+
+    .tile:active { transform: scale(0.95); }
+
+    /* Embossed Low-Opacity Background Tile Pattern */
+    .tile-pattern {
+      position: absolute;
+      width: 62%;
+      height: 62%;
+      pointer-events: none;
+      opacity: 0.16;
+      color: #2B1C14;
+      transition: opacity 0.18s ease;
+      z-index: 1;
+    }
+
+    [data-theme="dark"] .tile-pattern {
+      opacity: 0.2;
+      color: #120B08;
+    }
+
+    /* Hide embossed pattern completely when tile has a Cat or X mark */
+    .tile.has-cat .tile-pattern,
+    .tile.has-x .tile-pattern {
+      opacity: 0;
+    }
+
+    /* Large, Chunky Solid-White X Mark directly on the colored tile */
+    .mark-x {
+      position: relative;
+      z-index: 3;
+      width: 64%;
+      height: 64%;
+      pointer-events: none;
+      filter: drop-shadow(0 1px 2px var(--mark-shadow));
+      animation: markPop 0.14s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .mark-x line {
+      stroke: var(--mark-color);
+      stroke-width: 4.6;
+      stroke-linecap: round;
+    }
+
+    .tile.auto-x .mark-x {
+      width: 62%;
+      height: 62%;
+      opacity: var(--mark-auto-opacity);
+    }
+
+    .tile.auto-x .mark-x line {
+      stroke-width: 4.6;
+    }
+
+    /* Cute Placed Cat Face */
+    .cat-svg {
+      position: relative;
+      z-index: 4;
+      width: 82%;
+      height: 82%;
+      pointer-events: none;
+      filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.22));
+      animation: catBounce 0.26s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .tile.cat-locked-tap .cat-svg {
+      animation: catHappyNod 0.28s ease;
+    }
+
+    /* Instant Wrong-Cat Guard: Red Shake & Ring */
+    .tile.wrong-shake {
+      animation: tileWrongShake 0.42s ease;
+      z-index: 6;
+    }
+
+    .tile.wrong-shake::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      border: 3px solid var(--danger-ring);
+      background: rgba(224, 45, 45, 0.38);
+      pointer-events: none;
+      z-index: 7;
+    }
+
+    /* Conflicting Placed Cat Flash */
+    .tile.conflict-flash::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      border: 3px solid var(--danger-ring);
+      background: rgba(224, 45, 45, 0.34);
+      pointer-events: none;
+      z-index: 7;
+      animation: conflictPulse 0.42s ease-in-out 2;
+    }
+
+    .tile.conflict-flash .cat-svg {
+      animation: catConflictShake 0.36s ease;
+    }
+
+    /* Hint Highlights */
+    .tile.hint-target::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      border: 3px solid #FFFDF5;
+      box-shadow: inset 0 0 0 2.5px #E58E17, 0 0 10px rgba(229, 142, 23, 0.55);
+      pointer-events: none;
+      z-index: 5;
+      animation: hintPulse 1s ease-in-out infinite;
+    }
+
+    .tile.hint-secondary::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      border: 2.5px dashed rgba(255, 255, 255, 0.92);
+      background: rgba(255, 255, 255, 0.16);
+      pointer-events: none;
+      z-index: 4;
+    }
+
+    /* Async Puzzle Generator Overlay */
+    .board-loading {
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      background: rgba(250, 246, 240, 0.88);
+      backdrop-filter: blur(4px);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      z-index: 15;
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: var(--text-primary);
+    }
+
+    [data-theme="dark"] .board-loading {
+      background: rgba(23, 20, 18, 0.88);
+    }
+
+    .board-loading.visible { display: flex; }
+
+    .spinner {
+      width: 34px;
+      height: 34px;
+      border: 3.5px solid var(--accent-soft);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+
+    /* ==========================================================================
+       BOTTOM ACTION BAR (Undo, Auto-X, Hint, Clear, New)
+       ========================================================================== */
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 7px;
+    }
+
+    .ctrl-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 10px 4px;
+      border-radius: 14px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.71rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.12s ease, background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+    }
+
+    .ctrl-btn:hover { background: var(--bg-surface-soft); }
+    .ctrl-btn:active { transform: scale(0.94); }
+    .ctrl-btn:disabled { opacity: 0.42; cursor: not-allowed; transform: none; }
+
+    .ctrl-btn svg {
+      width: 19px;
+      height: 19px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2.1;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .ctrl-btn.toggle-on {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .ctrl-btn.hint-ctrl {
+      background: var(--hint-bg);
+      border-color: var(--hint-border);
+      color: var(--hint-text);
+    }
+
+    .ctrl-btn.primary-ctrl {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #FFFFFF;
+    }
+
+    .ctrl-btn.primary-ctrl:hover { background: var(--accent-hover); }
+
+    /* ==========================================================================
+       MODALS (HOW TO PLAY, OUT OF FISH, VICTORY)
+       ========================================================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(20, 15, 12, 0.56);
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease;
+    }
+
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 396px;
+      max-height: 90dvh;
+      overflow-y: auto;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(14px) scale(0.96);
+      transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .modal-backdrop.open .modal-card {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .modal-header h2 {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+
+    .rule-list {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      margin-bottom: 14px;
+    }
+
+    .rule-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      background: var(--bg-surface-soft);
+      padding: 10px 12px;
+      border-radius: 14px;
+      font-size: 0.82rem;
+      line-height: 1.4;
+    }
+
+    .rule-badge {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #FFFFFF;
+      font-weight: 800;
+      font-size: 0.78rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .rule-item p {
+      color: var(--text-secondary);
+      margin-top: 2px;
+      font-size: 0.76rem;
+    }
+
+    .controls-tip-box {
+      background: var(--accent-soft);
+      border-radius: 14px;
+      padding: 10px 12px;
+      font-size: 0.76rem;
+      color: var(--text-primary);
+      line-height: 1.45;
+      margin-bottom: 16px;
+    }
+
+    .btn-full {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 14px;
+      border: none;
+      background: var(--accent);
+      color: #FFFFFF;
+      font-family: inherit;
+      font-size: 0.92rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(224, 122, 95, 0.28);
+      transition: transform 0.14s ease, background-color 0.18s ease;
+    }
+
+    .btn-full:hover { background: var(--accent-hover); }
+    .btn-full:active { transform: scale(0.97); }
+
+    .btn-secondary {
+      background: var(--bg-surface-soft);
+      color: var(--text-primary);
+      box-shadow: none;
+      margin-top: 8px;
+    }
+
+    .btn-secondary:hover { background: var(--bg-surface-hover); }
+
+    .center-modal { text-align: center; }
+
+    .modal-hero-badge {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 12px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, #E07A5F, #F4B942);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 24px rgba(224, 122, 95, 0.34);
+      animation: catBounce 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .modal-hero-badge.danger-hero {
+      background: linear-gradient(135deg, #E05353, #F29C50);
+      box-shadow: 0 10px 24px rgba(224, 83, 83, 0.32);
+    }
+
+    .modal-hero-badge svg { width: 46px; height: 46px; }
+
+    .modal-hero-title {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.62rem;
+      margin-bottom: 5px;
+    }
+
+    .modal-hero-sub {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      margin-bottom: 16px;
+      line-height: 1.45;
+    }
+
+    .victory-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .v-stat {
+      background: var(--bg-surface-soft);
+      border-radius: 14px;
+      padding: 10px 6px;
+    }
+
+    .v-stat-val {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .v-stat-lbl {
+      font-size: 0.67rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    #confettiCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 60;
+    }
+
+    /* ==========================================================================
+       ANIMATIONS
+       ========================================================================== */
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes markPop {
+      0% { transform: scale(0.35); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes catBounce {
+      0% { transform: scale(0.3) rotate(-8deg); opacity: 0; }
+      65% { transform: scale(1.1) rotate(3deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    @keyframes catHappyNod {
+      0%, 100% { transform: scale(1); }
+      45% { transform: scale(1.12); }
+    }
+
+    @keyframes tileWrongShake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-5px); }
+      40% { transform: translateX(5px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(3px); }
+    }
+
+    @keyframes catConflictShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-3px) rotate(-6deg); }
+      75% { transform: translateX(3px) rotate(6deg); }
+    }
+
+    @keyframes conflictPulse {
+      0%, 100% { opacity: 0.95; }
+      50% { opacity: 0.3; }
+    }
+
+    @keyframes hintPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(0.95); opacity: 0.72; }
+    }
+
+    @keyframes fishLostShake {
+      0%, 100% { transform: scale(1) rotate(0); }
+      25% { transform: scale(1.22) rotate(-14deg); }
+      65% { transform: scale(0.84) rotate(10deg); }
+    }
+
+    @media (max-height: 700px) {
+      body { padding: 6px 10px 10px; }
+      .app-shell { gap: 6px; }
+      .board-card { max-width: 392px; padding: 6px; }
+      .ctrl-btn { padding: 8px 3px; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="confettiCanvas"></canvas>
+
+  <main class="app-shell">
+    <!-- TOP HEADER -->
+    <header class="header">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <svg viewBox="0 0 64 64">
+            <path d="M14 26 L11 10 L25 18 C29 16.8 35 16.8 39 18 L53 10 L50 26 C53 31 54 37 52 43 C49 51 41 55 32 55 C23 55 15 51 12 43 C10 37 11 31 14 26 Z" fill="#FFFFFF"/>
+            <circle cx="24" cy="35" r="3.2" fill="#2D2420"/>
+            <circle cx="40" cy="35" r="3.2" fill="#2D2420"/>
+            <path d="M29.5 40.5 L34.5 40.5 L32 43.5 Z" fill="#E07A5F"/>
+            <path d="M27 45 Q32 49 37 45" fill="none" stroke="#2D2420" stroke-width="2.4" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <div class="brand-title-row">
+            <h1>Meowdoku</h1>
+            <span class="level-pill" id="levelBadge">Level 1</span>
+          </div>
+          <span class="brand-subtitle" id="puzzleSubtitle">8×8 · Pure Logic · Unique Solution</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button class="icon-btn" id="btnSound" title="Toggle Sound" aria-label="Toggle Sound"></button>
+        <button class="icon-btn" id="btnTheme" title="Toggle Dark Mode" aria-label="Toggle Dark Mode"></button>
+        <button class="icon-btn" id="btnHelp" title="How to Play" aria-label="How to Play">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="9.5"/>
+            <path d="M9.5 9.2a2.6 2.6 0 0 1 5 .8c0 1.8-2.5 2.2-2.5 3.6"/>
+            <circle cx="12" cy="17.2" r="0.7" fill="currentColor"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- BOARD SIZE TABS (6x6 to 10x10, default 8x8) -->
+    <nav class="size-bar" aria-label="Board Size">
+      <button class="size-btn" data-size="6">6×6</button>
+      <button class="size-btn" data-size="7">7×7</button>
+      <button class="size-btn active" data-size="8">8×8</button>
+      <button class="size-btn" data-size="9">9×9</button>
+      <button class="size-btn" data-size="10">10×10</button>
+    </nav>
+
+    <!-- STATUS STRIP (Cat Counter, 3 Fish Lives, Timer, Solved) -->
+    <section class="status-strip" aria-label="Game Status">
+      <div class="cat-counter-pill" title="Cats Found">
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <path d="M13 26 L10 9 L25 17 C29 15.8 35 15.8 39 17 L54 9 L51 26 C54 31 55 38 52 44 C49 52 41 56 32 56 C23 56 15 52 12 44 C9 38 10 31 13 26 Z" fill="#2E2623"/>
+          <path d="M16 40 C16 32 22 27 32 27 C42 27 48 32 48 40 C48 49 41 54 32 54 C23 54 16 49 16 40 Z" fill="#FFFFFF"/>
+          <circle cx="24" cy="36" r="3.4" fill="#2E2623"/>
+          <circle cx="40" cy="36" r="3.4" fill="#2E2623"/>
+          <circle cx="25" cy="34.8" r="1.1" fill="#FFFFFF"/>
+          <circle cx="41" cy="34.8" r="1.1" fill="#FFFFFF"/>
+          <path d="M29.5 41 L34.5 41 L32 43.8 Z" fill="#F28482"/>
+        </svg>
+        <span><span class="cat-count-num" id="catFoundNum">0</span> / <span id="catTotalNum">8</span></span>
+      </div>
+
+      <div class="fish-lives" id="fishLives" aria-label="Fish Lives Remaining" title="3 Fish Lives"></div>
+
+      <div class="mini-stats">
+        <div class="mini-stat">
+          <span class="mini-stat-lbl">Time</span>
+          <span class="mini-stat-val" id="timerDisplay">00:00</span>
+        </div>
+        <div class="mini-stat">
+          <span class="mini-stat-lbl">Solved</span>
+          <span class="mini-stat-val" id="solvedDisplay">0</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPACT 3-PART RULES STRIP -->
+    <section class="rules-strip" aria-label="Quick Rules">
+      <div class="rule-pill">
+        <span class="rule-pill-dot" style="background:#38A3B8;"></span>
+        <span>1 Cat per color</span>
+      </div>
+      <div class="rule-pill">
+        <span class="rule-pill-dot" style="background:#F48FB1;"></span>
+        <span>1 Cat per row &amp; col</span>
+      </div>
+      <div class="rule-pill">
+        <span class="rule-pill-dot" style="background:#F59B56;"></span>
+        <span>Cats cannot touch</span>
+      </div>
+    </section>
+
+    <!-- HINT / WARNING / STATUS BANNER -->
+    <div class="banner-slot">
+      <div class="status-banner" id="statusBanner">
+        <span id="statusText">Tap once for ✕, tap again to place a Cat. Drag to mark ✕!</span>
+        <div class="banner-actions">
+          <button class="banner-apply-btn" id="btnApplyHint" style="display:none;">Apply</button>
+          <button class="banner-close" id="btnCloseBanner" style="display:none;" aria-label="Dismiss">&times;</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROUNDED TILE GAME BOARD -->
+    <section class="board-card">
+      <div class="board-grid size-8" id="boardGrid" role="grid" aria-label="Meowdoku Board"></div>
+      <div class="board-loading" id="boardLoading">
+        <div class="spinner"></div>
+        <span id="loadingLabel">Generating logical puzzle...</span>
+      </div>
+    </section>
+
+    <!-- BOTTOM ACTION BAR -->
+    <section class="controls-grid" aria-label="Game Controls">
+      <button class="ctrl-btn" id="btnUndo" disabled>
+        <svg viewBox="0 0 24 24">
+          <path d="M9 14L4 9l5-5"/>
+          <path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>
+        </svg>
+        <span>Undo</span>
+      </button>
+
+      <button class="ctrl-btn toggle-on" id="btnAutoX" aria-pressed="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+        <span>Auto-✕</span>
+      </button>
+
+      <button class="ctrl-btn hint-ctrl" id="btnHint">
+        <svg viewBox="0 0 24 24">
+          <path d="M9 18h6"/>
+          <path d="M10 22h4"/>
+          <path d="M12 2a7 7 0 0 0-4 12.7V16h8v-1.3A7 7 0 0 0 12 2z"/>
+        </svg>
+        <span>Hint</span>
+      </button>
+
+      <button class="ctrl-btn" id="btnClear">
+        <svg viewBox="0 0 24 24">
+          <path d="M3 6h18"/>
+          <path d="M8 6V4h8v2"/>
+          <path d="M19 6l-1 14H6L5 6"/>
+        </svg>
+        <span>Clear</span>
+      </button>
+
+      <button class="ctrl-btn primary-ctrl" id="btnNew">
+        <svg viewBox="0 0 24 24">
+          <path d="M21 12a9 9 0 1 1-2.64-6.36"/>
+          <path d="M21 3v6h-6"/>
+        </svg>
+        <span>New</span>
+      </button>
+    </section>
+  </main>
+
+  <!-- HOW TO PLAY MODAL -->
+  <div class="modal-backdrop" id="helpModal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="helpTitle">How to Play Meowdoku 🐾</h2>
+        <button class="icon-btn" id="btnCloseHelp" aria-label="Close">
+          <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="rule-list">
+        <div class="rule-item">
+          <div class="rule-badge">1</div>
+          <div>
+            <strong>1 Cat per Color</strong>
+            <p>Each colored tile region must contain exactly one cat.</p>
+          </div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-badge">2</div>
+          <div>
+            <strong>1 Cat per Row &amp; Column</strong>
+            <p>Every horizontal row and vertical column holds exactly one cat.</p>
+          </div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-badge">3</div>
+          <div>
+            <strong>Cats Cannot Touch</strong>
+            <p>No two cats can touch orthogonally or diagonally.</p>
+          </div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-badge">🐟</div>
+          <div>
+            <strong>3 Fish Lives &amp; Wrong-Cat Guard</strong>
+            <p>Wrong cat placements are automatically blocked and cost 1 Fish Life. Confirmed cats stay safely locked!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls-tip-box">
+        <strong>Controls:</strong><br/>
+        • <strong>Tap 1×</strong> to mark ✕ · <strong>Tap 2×</strong> to place a Cat.<br/>
+        • <strong>Press &amp; drag</strong> across tiles to smoothly mark or erase multiple ✕.<br/>
+        • <strong>Hint (💡)</strong> shows a real logical deduction with a 1-tap <strong>Apply</strong> button.
+      </div>
+
+      <button class="btn-full" id="btnGotIt">Got It, Let's Play!</button>
+    </div>
+  </div>
+
+  <!-- OUT OF FISH MODAL -->
+  <div class="modal-backdrop" id="outOfFishModal" role="dialog" aria-modal="true" aria-labelledby="oofTitle">
+    <div class="modal-card center-modal">
+      <div class="modal-hero-badge danger-hero">
+        <svg viewBox="0 0 64 64">
+          <path d="M44 32 C44 21 33 14 21 18 C14 20 9 26 7 32 C9 38 14 44 21 46 C33 50 44 43 44 32 Z" fill="#FFFFFF"/>
+          <path d="M42 32 L57 20 L54 32 L57 44 Z" fill="#FFFFFF"/>
+          <path d="M18 27 L24 33 M24 27 L18 33" stroke="#D93838" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h2 class="modal-hero-title" id="oofTitle">Out of Fish!</h2>
+      <p class="modal-hero-sub">All 3 fish lives have been used on this board. Would you like to refill 1 fish and continue, or retry this puzzle fresh?</p>
+      <button class="btn-full" id="btnRefillFish">Refill 1 Fish &amp; Continue</button>
+      <button class="btn-full btn-secondary" id="btnRetryBoard">Retry This Board</button>
+    </div>
+  </div>
+
+  <!-- VICTORY MODAL -->
+  <div class="modal-backdrop" id="victoryModal" role="dialog" aria-modal="true" aria-labelledby="victoryTitle">
+    <div class="modal-card center-modal">
+      <div class="modal-hero-badge">
+        <svg viewBox="0 0 64 64">
+          <path d="M14 26 L11 10 L25 18 C29 16.8 35 16.8 39 18 L53 10 L50 26 C53 31 54 37 52 43 C49 51 41 55 32 55 C23 55 15 51 12 43 C10 37 11 31 14 26 Z" fill="#FFFFFF"/>
+          <path d="M20 35 Q24 31 28 35" fill="none" stroke="#2D2420" stroke-width="2.8" stroke-linecap="round"/>
+          <path d="M36 35 Q40 31 44 35" fill="none" stroke="#2D2420" stroke-width="2.8" stroke-linecap="round"/>
+          <path d="M29.5 40.5 L34.5 40.5 L32 43.5 Z" fill="#E07A5F"/>
+          <path d="M27 45.5 Q32 49.5 37 45.5" fill="none" stroke="#2D2420" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h2 class="modal-hero-title" id="victoryTitle">Purr-fect! 🎉</h2>
+      <p class="modal-hero-sub" id="victorySubtitle">You completed Level 1!</p>
+
+      <div class="victory-stats">
+        <div class="v-stat">
+          <div class="v-stat-val" id="vLevel">1</div>
+          <div class="v-stat-lbl">Level</div>
+        </div>
+        <div class="v-stat">
+          <div class="v-stat-val" id="vTime">00:00</div>
+          <div class="v-stat-lbl">Time</div>
+        </div>
+        <div class="v-stat">
+          <div class="v-stat-val" id="vFish">3 / 3</div>
+          <div class="v-stat-lbl">Fish Left</div>
+        </div>
+      </div>
+
+      <button class="btn-full" id="btnNextLevel">Next Level</button>
+      <button class="btn-full btn-secondary" id="btnAdmireBoard">Admire Board</button>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      /* ==========================================================================
+         AUTHENTIC MEOWDOKU COLOR PALETTE + EMBOSSED SVG TILE PATTERNS
+         ========================================================================== */
+      const REGION_PALETTE = [
+        {
+          name: 'Teal',
+          color: '#38A3B8',
+          dark: '#2A7C8C',
+          pattern: `<path d="M12 20V11M12 12C12 8 7.5 6 5 7.5C5.5 11.5 8.5 13 12 12ZM12 12C12 8 16.5 6 19 7.5C18.5 11.5 15.5 13 12 12Z" fill="currentColor" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>`
+        },
+        {
+          name: 'Pink',
+          color: '#F48FB1',
+          dark: '#B85A7C',
+          pattern: `<path d="M4 9l4 1.5M3.5 13h4.5M4.5 16.5l3.5-1M20 9l-4 1.5M20.5 13H16M19.5 16.5l-3.5-1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M10 12.2c0-1 1.2-1.4 2-.5.8-.9 2-.5 2 .5 0 1.4-2 2.6-2 2.6s-2-1.2-2-2.6z" fill="currentColor"/>`
+        },
+        {
+          name: 'Purple',
+          color: '#8E7CC3',
+          dark: '#635394',
+          pattern: `<path d="M5 12h12M17 12l3-3v6l-3-3zM5 12l3-2.5v5L5 12zM9.5 8.5v7M13 8.5v7" fill="currentColor" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>`
+        },
+        {
+          name: 'Light Green',
+          color: '#81C784',
+          dark: '#4D8E50',
+          pattern: `<path d="M7.5 6l2.8 4.8H4.7L7.5 6zm9 0l2.8 4.8h-5.6L16.5 6zm-9 8l2.8 4.8H4.7L7.5 14zm9 0l2.8 4.8h-5.6L16.5 14z" fill="currentColor"/>`
+        },
+        {
+          name: 'Rose',
+          color: '#C8647D',
+          dark: '#964056',
+          pattern: `<path d="M12 4.5a5.5 5.5 0 0 0-5.5 5.5v3.5L5 16h14l-1.5-2.5V10A5.5 5.5 0 0 0 12 4.5zM10 17.5a2 2 0 0 0 4 0h-4z" fill="currentColor"/>`
+        },
+        {
+          name: 'Dark Green',
+          color: '#2E8B57',
+          dark: '#1F633D',
+          pattern: `<circle cx="7.5" cy="9.5" r="2" fill="currentColor"/><circle cx="12" cy="7.5" r="2.1" fill="currentColor"/><circle cx="16.5" cy="9.5" r="2" fill="currentColor"/><path d="M12 12c-3 0-5 2.1-4.5 4.3.4 1.6 2 2.2 4.5 1.8 2.5.4 4.1-.2 4.5-1.8.5-2.2-1.5-4.3-4.5-4.3z" fill="currentColor"/>`
+        },
+        {
+          name: 'Yellow',
+          color: '#F6D576',
+          dark: '#B89635',
+          pattern: `<path d="M4.5 8.5l7.5 3.5-7.5 3.5v-7zm15 0L12 12l7.5 3.5v-7z" fill="currentColor"/><circle cx="12" cy="12" r="2.2" fill="currentColor"/>`
+        },
+        {
+          name: 'Brown',
+          color: '#A87650',
+          dark: '#7A5234',
+          pattern: `<circle cx="7" cy="7" r="2.1" fill="currentColor"/><circle cx="12" cy="7" r="2.1" fill="currentColor"/><circle cx="17" cy="7" r="2.1" fill="currentColor"/><circle cx="7" cy="12" r="2.1" fill="currentColor"/><circle cx="12" cy="12" r="2.1" fill="currentColor"/><circle cx="17" cy="12" r="2.1" fill="currentColor"/><circle cx="7" cy="17" r="2.1" fill="currentColor"/><circle cx="12" cy="17" r="2.1" fill="currentColor"/><circle cx="17" cy="17" r="2.1" fill="currentColor"/>`
+        },
+        {
+          name: 'Peach',
+          color: '#F59B56',
+          dark: '#B86A2E',
+          pattern: `<path d="M8 6.5c-1.4 0-2.5 1.1-2.5 2.4 0 2.3 4 4.6 4 4.6s4-2.3 4-4.6c0-1.3-1.1-2.4-2.5-2.4-.8 0-1.5.4-1.5 1 0-.6-.7-1-1.5-1zm7.5 6.5c-1.1 0-2 .9-2 1.9 0 1.8 3.2 3.6 3.2 3.6s3.2-1.8 3.2-3.6c0-1-.9-1.9-2-1.9-.6 0-1.2.3-1.2.8 0-.5-.6-.8-1.2-.8z" fill="currentColor"/>`
+        },
+        {
+          name: 'Olive',
+          color: '#C9A218',
+          dark: '#91740C',
+          pattern: `<path d="M6.5 18c1.2-5 3.5-9.5 6.5-12M11 18.5c1.2-4.8 3.2-9 6-11.5M15.5 18.5c1-3.5 2.3-6.5 4-8.5" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/>`
+        },
+        {
+          name: 'Sky Blue',
+          color: '#8FBCE6',
+          dark: '#5280AD',
+          pattern: `<circle cx="12" cy="12" r="7.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6.5 9c3.5 0 7.5 2.5 9.5 7.5M9 5.5c2 3.5 2.5 8 1 13.5M16 6.5c-4 1-7.5 4.5-9.5 8.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>`
+        }
+      ];
+
+      // Cell States
+      const EMPTY = 0;
+      const MANUAL_X = 1;
+      const CAT = 2;
+      const AUTO_X = 3;
+
+      const MAX_LIVES = 3;
+      const STORAGE_KEY = 'meowdoku_authentic_v1';
+
+      function loadStorage() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) return JSON.parse(raw);
+        } catch (_) {}
+        return {
+          theme: 'light',
+          muted: false,
+          autoX: true,
+          level: 1,
+          solvedTotal: 0,
+          boardSize: 8
+        };
+      }
+
+      function saveStorage() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
+        } catch (_) {}
+      }
+
+      const prefs = loadStorage();
+
+      /* ==========================================================================
+         WEB AUDIO API SOUND SYNTHESIZER
+         ========================================================================== */
+      let audioCtx = null;
+
+      function getAudioCtx() {
+        if (prefs.muted) return null;
+        if (!audioCtx) {
+          const Ctx = window.AudioContext || window.webkitAudioContext;
+          if (Ctx) audioCtx = new Ctx();
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume().catch(() => {});
+        }
+        return audioCtx;
+      }
+
+      const Sound = {
+        pop(pitch = 430) {
+          const ctx = getAudioCtx();
+          if (!ctx) return;
+          const now = ctx.currentTime;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(pitch, now);
+          osc.frequency.exponentialRampToValueAtTime(pitch * 0.58, now + 0.055);
+          gain.gain.setValueAtTime(0.075, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.065);
+        },
+
+        catPurr() {
+          const ctx = getAudioCtx();
+          if (!ctx) return;
+          const now = ctx.currentTime;
+          [523.25, 659.25].forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            const t = now + idx * 0.055;
+            osc.frequency.setValueAtTime(freq, t);
+            osc.frequency.exponentialRampToValueAtTime(freq * 1.05, t + 0.14);
+            gain.gain.setValueAtTime(0.001, t);
+            gain.gain.linearRampToValueAtTime(0.11, t + 0.015);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(t);
+            osc.stop(t + 0.19);
+          });
+        },
+
+        errorBuzz() {
+          const ctx = getAudioCtx();
+          if (!ctx) return;
+          const now = ctx.currentTime;
+          [0, 0.11].forEach((offset) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sawtooth';
+            const t = now + offset;
+            osc.frequency.setValueAtTime(175, t);
+            osc.frequency.linearRampToValueAtTime(125, t + 0.085);
+            gain.gain.setValueAtTime(0.001, t);
+            gain.gain.linearRampToValueAtTime(0.07, t + 0.012);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.095);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(t);
+            osc.stop(t + 0.1);
+          });
+        },
+
+        hint() {
+          const ctx = getAudioCtx();
+          if (!ctx) return;
+          const now = ctx.currentTime;
+          [440, 587.33].forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            const t = now + idx * 0.065;
+            osc.frequency.setValueAtTime(freq, t);
+            gain.gain.setValueAtTime(0.08, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(t);
+            osc.stop(t + 0.2);
+          });
+        },
+
+        victory() {
+          const ctx = getAudioCtx();
+          if (!ctx) return;
+          const now = ctx.currentTime;
+          [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            const t = now + i * 0.095;
+            osc.frequency.setValueAtTime(freq, t);
+            gain.gain.setValueAtTime(0.001, t);
+            gain.gain.linearRampToValueAtTime(0.13, t + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.42);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(t);
+            osc.stop(t + 0.45);
+          });
+        }
+      };
+
+      /* ==========================================================================
+         FAST PRNG HELPERS
+         ========================================================================== */
+      function createRng(seed) {
+        let a = seed >>> 0;
+        return function rng() {
+          a |= 0;
+          a = (a + 0x6D2B79F5) | 0;
+          let t = Math.imul(a ^ (a >>> 15), 1 | a);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+
+      function shuffle(arr, rng) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(rng() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      }
+
+      /* ==========================================================================
+         8-RULE GENUINE HUMAN DEDUCTIVE HINT ENGINE (ZERO FAKE SPOILERS)
+         Shared by both the Hint button and the Generator's Human-Solvable Check.
+         ========================================================================== */
+      function formatCell(r, c) {
+        return `Row ${r + 1}, Col ${c + 1}`;
+      }
+
+      function formatCellList(cells) {
+        if (cells.length === 1) return formatCell(cells[0][0], cells[0][1]);
+        if (cells.length === 2) return `${formatCell(cells[0][0], cells[0][1])} & ${formatCell(cells[1][0], cells[1][1])}`;
+        return `${formatCell(cells[0][0], cells[0][1])} (+${cells.length - 1} more)`;
+      }
+
+      function findNextLogicalStep(N, regions, board, palette) {
+        const regName = (id) => palette ? palette[id].name : `Color ${id + 1}`;
+        const placedCats = [];
+        const solvedRow = new Array(N).fill(false);
+        const solvedCol = new Array(N).fill(false);
+        const solvedReg = new Array(N).fill(false);
+
+        for (let r = 0; r < N; r++) {
+          for (let c = 0; c < N; c++) {
+            if (board[r][c] === CAT) {
+              placedCats.push([r, c]);
+              solvedRow[r] = true;
+              solvedCol[c] = true;
+              solvedReg[regions[r][c]] = true;
+            }
+          }
+        }
+
+        // ------------------------------------------------------------------
+        // RULE 2: Blocked by Already-Placed Cat
+        // ------------------------------------------------------------------
+        for (const [cr, cc] of placedCats) {
+          const catReg = regions[cr][cc];
+          const blocked = [];
+          for (let r = 0; r < N; r++) {
+            for (let c = 0; c < N; c++) {
+              if (board[r][c] !== EMPTY) continue;
+              if (r === cr || c === cc || regions[r][c] === catReg ||
+                  (Math.abs(r - cr) <= 1 && Math.abs(c - cc) <= 1)) {
+                blocked.push([r, c]);
+              }
+            }
+          }
+          if (blocked.length > 0) {
+            return {
+              rule: 2,
+              targets: blocked,
+              secondary: [[cr, cc]],
+              text: `${formatCellList(blocked)} must be ✕ because of the cat at ${formatCell(cr, cc)} (${regName(catReg)}).`,
+              action: { type: 'mark_x', cells: blocked }
+            };
+          }
+        }
+
+        // Gather open (EMPTY) candidates per Row, Col, and Region
+        const rowCands = Array.from({ length: N }, () => []);
+        const colCands = Array.from({ length: N }, () => []);
+        const regCands = Array.from({ length: N }, () => []);
+        const allEmpty = [];
+
+        for (let r = 0; r < N; r++) {
+          for (let c = 0; c < N; c++) {
+            if (board[r][c] === EMPTY) {
+              const cell = [r, c];
+              allEmpty.push(cell);
+              rowCands[r].push(cell);
+              colCands[c].push(cell);
+              regCands[regions[r][c]].push(cell);
+            }
+          }
+        }
+
+        // ------------------------------------------------------------------
+        // RULE 3: Naked Single (Only 1 Open Cell Left in Color / Row / Col)
+        // ------------------------------------------------------------------
+        for (let reg = 0; reg < N; reg++) {
+          if (!solvedReg[reg] && regCands[reg].length === 1) {
+            const [r, c] = regCands[reg][0];
+            return {
+              rule: 3,
+              targets: [[r, c]],
+              secondary: [],
+              text: `Only one spot remains in ${regName(reg)} — place a cat at ${formatCell(r, c)}!`,
+              action: { type: 'place_cat', cells: [[r, c]] }
+            };
+          }
+        }
+        for (let r = 0; r < N; r++) {
+          if (!solvedRow[r] && rowCands[r].length === 1) {
+            const [tr, tc] = rowCands[r][0];
+            return {
+              rule: 3,
+              targets: [[tr, tc]],
+              secondary: [],
+              text: `Only one spot remains in Row ${r + 1} — place a cat at ${formatCell(tr, tc)}!`,
+              action: { type: 'place_cat', cells: [[tr, tc]] }
+            };
+          }
+        }
+        for (let c = 0; c < N; c++) {
+          if (!solvedCol[c] && colCands[c].length === 1) {
+            const [tr, tc] = colCands[c][0];
+            return {
+              rule: 3,
+              targets: [[tr, tc]],
+              secondary: [],
+              text: `Only one spot remains in Col ${c + 1} — place a cat at ${formatCell(tr, tc)}!`,
+              action: { type: 'place_cat', cells: [[tr, tc]] }
+            };
+          }
+        }
+
+        // ------------------------------------------------------------------
+        // RULE 4: Region-to-Line Pointing
+        // ------------------------------------------------------------------
+        for (let reg = 0; reg < N; reg++) {
+          if (solvedReg[reg] || regCands[reg].length < 2) continue;
+
+          const rowsInReg = new Set(regCands[reg].map(([r]) => r));
+          if (rowsInReg.size === 1) {
+            const onlyRow = [...rowsInReg][0];
+            const elims = rowCands[onlyRow].filter(([r, c]) => regions[r][c] !== reg);
+            if (elims.length > 0) {
+              return {
+                rule: 4,
+                targets: elims,
+                secondary: regCands[reg],
+                text: `All open ${regName(reg)} tiles are in Row ${onlyRow + 1}, claiming Row ${onlyRow + 1}'s cat — mark ${formatCellList(elims)} as ✕!`,
+                action: { type: 'mark_x', cells: elims }
+              };
+            }
+          }
+
+          const colsInReg = new Set(regCands[reg].map(([, c]) => c));
+          if (colsInReg.size === 1) {
+            const onlyCol = [...colsInReg][0];
+            const elims = colCands[onlyCol].filter(([r, c]) => regions[r][c] !== reg);
+            if (elims.length > 0) {
+              return {
+                rule: 4,
+                targets: elims,
+                secondary: regCands[reg],
+                text: `All open ${regName(reg)} tiles are in Col ${onlyCol + 1}, claiming Col ${onlyCol + 1}'s cat — mark ${formatCellList(elims)} as ✕!`,
+                action: { type: 'mark_x', cells: elims }
+              };
+            }
+          }
+        }
+
+        // ------------------------------------------------------------------
+        // RULE 5: Line-to-Region Pointing
+        // ------------------------------------------------------------------
+        for (let r = 0; r < N; r++) {
+          if (solvedRow[r] || rowCands[r].length < 2) continue;
+          const regsInRow = new Set(rowCands[r].map(([rr, cc]) => regions[rr][cc]));
+          if (regsInRow.size === 1) {
+            const onlyReg = [...regsInRow][0];
+            const elims = regCands[onlyReg].filter(([rr]) => rr !== r);
+            if (elims.length > 0) {
+              return {
+                rule: 5,
+                targets: elims,
+                secondary: rowCands[r],
+                text: `All open tiles in Row ${r + 1} belong to ${regName(onlyReg)}, claiming its cat — mark ${formatCellList(elims)} as ✕!`,
+                action: { type: 'mark_x', cells: elims }
+              };
+            }
+          }
+        }
+
+        for (let c = 0; c < N; c++) {
+          if (solvedCol[c] || colCands[c].length < 2) continue;
+          const regsInCol = new Set(colCands[c].map(([rr, cc]) => regions[rr][cc]));
+          if (regsInCol.size === 1) {
+            const onlyReg = [...regsInCol][0];
+            const elims = regCands[onlyReg].filter(([, cc]) => cc !== c);
+            if (elims.length > 0) {
+              return {
+                rule: 5,
+                targets: elims,
+                secondary: colCands[c],
+                text: `All open tiles in Col ${c + 1} belong to ${regName(onlyReg)}, claiming its cat — mark ${formatCellList(elims)} as ✕!`,
+                action: { type: 'mark_x', cells: elims }
+              };
+            }
+          }
+        }
+
+        // ------------------------------------------------------------------
+        // RULE 6: Common Neighbor (Touching) Elimination
+        // ------------------------------------------------------------------
+        const groups = [];
+        for (let reg = 0; reg < N; reg++) {
+          if (!solvedReg[reg] && regCands[reg].length >= 2 && regCands[reg].length <= 6) {
+            groups.push({ type: 'reg', id: reg, label: regName(reg), cells: regCands[reg] });
+          }
+        }
+        for (let r = 0; r < N; r++) {
+          if (!solvedRow[r] && rowCands[r].length >= 2 && rowCands[r].length <= 3) {
+            groups.push({ type: 'row', id: r, label: `Row ${r + 1}`, cells: rowCands[r] });
+          }
+        }
+        for (let c = 0; c < N; c++) {
+          if (!solvedCol[c] && colCands[c].length >= 2 && colCands[c].length <= 3) {
+            groups.push({ type: 'col', id: c, label: `Col ${c + 1}`, cells: colCands[c] });
+          }
+        }
+
+        for (const g of groups) {
+          const elims = [];
+          for (const [er, ec] of allEmpty) {
+            if (g.type === 'reg' && regions[er][ec] === g.id) continue;
+            if (g.type === 'row' && er === g.id) continue;
+            if (g.type === 'col' && ec === g.id) continue;
+
+            let touchesAll = true;
+            for (const [gr, gc] of g.cells) {
+              if (Math.abs(gr - er) > 1 || Math.abs(gc - ec) > 1) {
+                touchesAll = false;
+                break;
+              }
+            }
+            if (touchesAll) elims.push([er, ec]);
+          }
+          if (elims.length > 0) {
+            return {
+              rule: 6,
+              targets: elims,
+              secondary: g.cells,
+              text: `Every open spot in ${g.label} touches ${formatCellList(elims)}. A cat there would block all of ${g.label}, so mark ✕!`,
+              action: { type: 'mark_x', cells: elims }
+            };
+          }
+        }
+
+        // ------------------------------------------------------------------
+        // RULE 7: Naked Pairs (2 Colors in 2 Rows/Cols & 2 Rows/Cols in 2 Colors)
+        // ------------------------------------------------------------------
+        const unsolvedRegs = [];
+        for (let reg = 0; reg < N; reg++) {
+          if (!solvedReg[reg] && regCands[reg].length >= 2) unsolvedRegs.push(reg);
+        }
+
+        for (let i = 0; i < unsolvedRegs.length; i++) {
+          for (let j = i + 1; j < unsolvedRegs.length; j++) {
+            const rA = unsolvedRegs[i], rB = unsolvedRegs[j];
+            const combined = regCands[rA].concat(regCands[rB]);
+
+            const rowSet = new Set(combined.map(([r]) => r));
+            if (rowSet.size === 2) {
+              const [row1, row2] = [...rowSet].sort((a, b) => a - b);
+              const elims = rowCands[row1].concat(rowCands[row2])
+                .filter(([r, c]) => regions[r][c] !== rA && regions[r][c] !== rB);
+              if (elims.length > 0) {
+                return {
+                  rule: 7,
+                  targets: elims,
+                  secondary: combined,
+                  text: `${regName(rA)} & ${regName(rB)} are confined to Rows ${row1 + 1} & ${row2 + 1}, claiming both rows — mark ${formatCellList(elims)} as ✕!`,
+                  action: { type: 'mark_x', cells: elims }
+                };
+              }
+            }
+
+            const colSet = new Set(combined.map(([, c]) => c));
+            if (colSet.size === 2) {
+              const [col1, col2] = [...colSet].sort((a, b) => a - b);
+              const elims = colCands[col1].concat(colCands[col2])
+                .filter(([r, c]) => regions[r][c] !== rA && regions[r][c] !== rB);
+              if (elims.length > 0) {
+                return {
+                  rule: 7,
+                  targets: elims,
+                  secondary: combined,
+                  text: `${regName(rA)} & ${regName(rB)} are confined to Cols ${col1 + 1} & ${col2 + 1}, claiming both columns — mark ${formatCellList(elims)} as ✕!`,
+                  action: { type: 'mark_x', cells: elims }
+                };
+              }
+            }
+          }
+        }
+
+        const unsolvedRows = [];
+        for (let r = 0; r < N; r++) {
+          if (!solvedRow[r] && rowCands[r].length >= 2) unsolvedRows.push(r);
+        }
+        for (let i = 0; i < unsolvedRows.length; i++) {
+          for (let j = i + 1; j < unsolvedRows.length; j++) {
+            const rowA = unsolvedRows[i], rowB = unsolvedRows[j];
+            const combined = rowCands[rowA].concat(rowCands[rowB]);
+            const regSet = new Set(combined.map(([r, c]) => regions[r][c]));
+            if (regSet.size === 2) {
+              const [reg1, reg2] = [...regSet];
+              const elims = regCands[reg1].concat(regCands[reg2])
+                .filter(([r]) => r !== rowA && r !== rowB);
+              if (elims.length > 0) {
+                return {
+                  rule: 7,
+                  targets: elims,
+                  secondary: combined,
+                  text: `Rows ${rowA + 1} & ${rowB + 1} only appear in ${regName(reg1)} & ${regName(reg2)}, claiming both colors — mark ${formatCellList(elims)} as ✕!`,
+                  action: { type: 'mark_x', cells: elims }
+                };
+              }
+            }
+          }
+        }
+
+        const unsolvedCols = [];
+        for (let c = 0; c < N; c++) {
+          if (!solvedCol[c] && colCands[c].length >= 2) unsolvedCols.push(c);
+        }
+        for (let i = 0; i < unsolvedCols.length; i++) {
+          for (let j = i + 1; j < unsolvedCols.length; j++) {
+            const colA = unsolvedCols[i], colB = unsolvedCols[j];
+            const combined = colCands[colA].concat(colCands[colB]);
+            const regSet = new Set(combined.map(([r, c]) => regions[r][c]));
+            if (regSet.size === 2) {
+              const [reg1, reg2] = [...regSet];
+              const elims = regCands[reg1].concat(regCands[reg2])
+                .filter(([, c]) => c !== colA && c !== colB);
+              if (elims.length > 0) {
+                return {
+                  rule: 7,
+                  targets: elims,
+                  secondary: combined,
+                  text: `Cols ${colA + 1} & ${colB + 1} only appear in ${regName(reg1)} & ${regName(reg2)}, claiming both colors — mark ${formatCellList(elims)} as ✕!`,
+                  action: { type: 'mark_x', cells: elims }
+                };
+              }
+            }
+          }
+        }
+
+        // ------------------------------------------------------------------
+        // RULE 8: 1-Step What-If Contradiction
+        // ------------------------------------------------------------------
+        for (const [r, c] of allEmpty) {
+          const myReg = regions[r][c];
+          const isBlocked = (tr, tc) =>
+            tr === r || tc === c || regions[tr][tc] === myReg ||
+            (Math.abs(tr - r) <= 1 && Math.abs(tc - c) <= 1);
+
+          for (let reg = 0; reg < N; reg++) {
+            if (reg === myReg || solvedReg[reg] || regCands[reg].length === 0) continue;
+            if (!regCands[reg].some(([tr, tc]) => !isBlocked(tr, tc))) {
+              return {
+                rule: 8,
+                targets: [[r, c]],
+                secondary: regCands[reg],
+                text: `Placing a cat at ${formatCell(r, c)} would leave ${regName(reg)} with 0 valid spots — so ${formatCell(r, c)} must be ✕!`,
+                action: { type: 'mark_x', cells: [[r, c]] }
+              };
+            }
+          }
+
+          for (let rr = 0; rr < N; rr++) {
+            if (rr === r || solvedRow[rr] || rowCands[rr].length === 0) continue;
+            if (!rowCands[rr].some(([tr, tc]) => !isBlocked(tr, tc))) {
+              return {
+                rule: 8,
+                targets: [[r, c]],
+                secondary: rowCands[rr],
+                text: `Placing a cat at ${formatCell(r, c)} would leave Row ${rr + 1} with 0 valid spots — so ${formatCell(r, c)} must be ✕!`,
+                action: { type: 'mark_x', cells: [[r, c]] }
+              };
+            }
+          }
+
+          for (let cc = 0; cc < N; cc++) {
+            if (cc === c || solvedCol[cc] || colCands[cc].length === 0) continue;
+            if (!colCands[cc].some(([tr, tc]) => !isBlocked(tr, tc))) {
+              return {
+                rule: 8,
+                targets: [[r, c]],
+                secondary: colCands[cc],
+                text: `Placing a cat at ${formatCell(r, c)} would leave Col ${cc + 1} with 0 valid spots — so ${formatCell(r, c)} must be ✕!`,
+                action: { type: 'mark_x', cells: [[r, c]] }
+              };
+            }
+          }
+        }
+
+        return null;
+      }
+
+      /**
+       * Verifies an empty board (0/N) is 100% solvable purely by the 8 human rules.
+       */
+      function isHumanSolvable(N, regions) {
+        const simBoard = Array.from({ length: N }, () => new Array(N).fill(EMPTY));
+        let catsPlaced = 0;
+        const maxSteps = N * N + 30;
+
+        for (let step = 0; step < maxSteps; step++) {
+          if (catsPlaced === N) return true;
+          const deduction = findNextLogicalStep(N, regions, simBoard, null);
+          if (!deduction) return false;
+
+          if (deduction.action.type === 'place_cat') {
+            const [r, c] = deduction.action.cells[0];
+            simBoard[r][c] = CAT;
+            catsPlaced++;
+            const reg = regions[r][c];
+            for (let rr = 0; rr < N; rr++) {
+              for (let cc = 0; cc < N; cc++) {
+                if (simBoard[rr][cc] === EMPTY &&
+                    (rr === r || cc === c || regions[rr][cc] === reg ||
+                    (Math.abs(rr - r) <= 1 && Math.abs(cc - c) <= 1))) {
+                  simBoard[rr][cc] = AUTO_X;
+                }
+              }
+            }
+          } else if (deduction.action.type === 'mark_x') {
+            for (const [r, c] of deduction.action.cells) {
+              simBoard[r][c] = MANUAL_X;
+            }
+          }
+        }
+        return catsPlaced === N;
+      }
+
+      /* ==========================================================================
+         FAST MRV BACKTRACKING SOLVER (countSolutions <= limit)
+         ========================================================================== */
+      function countSolutions(regions, N, limit = 2) {
+        const regCells = Array.from({ length: N }, () => []);
+        for (let r = 0; r < N; r++) {
+          for (let c = 0; c < N; c++) {
+            regCells[regions[r][c]].push([r, c]);
+          }
+        }
+
+        const solutions = [];
+        const solCols = new Array(N).fill(-1);
+        const usedRow = new Uint8Array(N);
+        const usedCol = new Uint8Array(N);
+        const usedReg = new Uint8Array(N);
+
+        function canPlace(r, c) {
+          if (usedRow[r] || usedCol[c]) return false;
+          if (r > 0 && solCols[r - 1] !== -1 && Math.abs(solCols[r - 1] - c) <= 1) return false;
+          if (r < N - 1 && solCols[r + 1] !== -1 && Math.abs(solCols[r + 1] - c) <= 1) return false;
+          return true;
+        }
+
+        function solve(placed) {
+          if (placed === N) {
+            solutions.push(solCols.slice());
+            return;
+          }
+
+          // MRV: Pick unassigned region or row with the fewest valid placements
+          let bestList = null;
+          let bestLen = Infinity;
+
+          for (let reg = 0; reg < N; reg++) {
+            if (usedReg[reg]) continue;
+            const list = [];
+            const cells = regCells[reg];
+            for (let i = 0; i < cells.length; i++) {
+              const [r, c] = cells[i];
+              if (canPlace(r, c)) {
+                list.push([r, c]);
+                if (list.length >= bestLen) break;
+              }
+            }
+            if (list.length === 0) return; // Immediate dead-end prune
+            if (list.length < bestLen) {
+              bestLen = list.length;
+              bestList = list;
+              if (bestLen === 1) break;
+            }
+          }
+
+          if (bestLen > 1) {
+            for (let r = 0; r < N; r++) {
+              if (usedRow[r]) continue;
+              const list = [];
+              for (let c = 0; c < N; c++) {
+                if (!usedReg[regions[r][c]] && canPlace(r, c)) {
+                  list.push([r, c]);
+                  if (list.length >= bestLen) break;
+                }
+              }
+              if (list.length === 0) return;
+              if (list.length < bestLen) {
+                bestLen = list.length;
+                bestList = list;
+                if (bestLen === 1) break;
+              }
+            }
+          }
+
+          for (let i = 0; i < bestList.length; i++) {
+            const [r, c] = bestList[i];
+            const reg = regions[r][c];
+            solCols[r] = c;
+            usedRow[r] = 1;
+            usedCol[c] = 1;
+            usedReg[reg] = 1;
+
+            solve(placed + 1);
+
+            solCols[r] = -1;
+            usedRow[r] = 0;
+            usedCol[c] = 0;
+            usedReg[reg] = 0;
+
+            if (solutions.length >= limit) return;
+          }
+        }
+
+        solve(0);
+        return { count: solutions.length, solutions };
+      }
+
+      /* ==========================================================================
+         AUTHENTIC MEOWDOKU GENERATOR (Asymmetrical Anchor + Big Background)
+         ========================================================================== */
+      function generateCatPlacement(N, rng) {
+        const cols = new Array(N).fill(-1);
+        const usedCol = new Uint8Array(N);
+
+        function backtrack(r) {
+          if (r === N) return true;
+          const cands = [];
+          for (let c = 0; c < N; c++) {
+            if (usedCol[c]) continue;
+            if (r > 0 && Math.abs(c - cols[r - 1]) <= 1) continue;
+            cands.push(c);
+          }
+          shuffle(cands, rng);
+          for (const c of cands) {
+            cols[r] = c;
+            usedCol[c] = 1;
+            if (backtrack(r + 1)) return true;
+            usedCol[c] = 0;
+            cols[r] = -1;
+          }
+          return false;
+        }
+
+        backtrack(0);
+        return cols;
+      }
+
+      /**
+       * Creates authentic Meowdoku-style asymmetrical regions:
+       * - 1-2 Anchor regions (1-cell single or 2-3 cell straight line)
+       * - 1-2 Big Background regions (high growth weight wrapping around)
+       * - Organic 4-connected growth for all remaining regions
+       */
+      function growAuthenticRegions(N, catCols, rng) {
+        const grid = Array.from({ length: N }, () => new Array(N).fill(-1));
+        const sizes = new Array(N).fill(1);
+        const frontiers = Array.from({ length: N }, () => []);
+        const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+
+        // Seed each region with its solution cat cell
+        for (let r = 0; r < N; r++) {
+          grid[r][catCols[r]] = r;
+        }
+
+        const regOrder = shuffle(Array.from({ length: N }, (_, i) => i), rng);
+        const anchorCount = N >= 9 ? 2 : (N >= 7 && rng() < 0.7 ? 2 : 1);
+        const bgCount = N >= 9 ? 2 : 1;
+
+        const anchorSet = new Set(regOrder.slice(0, anchorCount));
+        const bgSet = new Set(regOrder.slice(anchorCount, anchorCount + bgCount));
+
+        // 1) Carve Anchor regions as either 1-cell single or 2-3 cell straight line
+        for (const reg of anchorSet) {
+          const r = reg;
+          const c = catCols[r];
+          const roll = rng();
+          const targetLen = roll < 0.28 ? 1 : (roll < 0.72 ? 2 : 3);
+          if (targetLen === 1) continue;
+
+          const horiz = rng() < 0.5;
+          const stepDirs = horiz ? [[0, -1], [0, 1]] : [[-1, 0], [1, 0]];
+          shuffle(stepDirs, rng);
+
+          let curLen = 1;
+          for (const [dr, dc] of stepDirs) {
+            let nr = r + dr, nc = c + dc;
+            while (curLen < targetLen && nr >= 0 && nr < N && nc >= 0 && nc < N && grid[nr][nc] === -1) {
+              grid[nr][nc] = reg;
+              sizes[reg]++;
+              curLen++;
+              nr += dr;
+              nc += dc;
+            }
+            if (curLen >= targetLen) break;
+          }
+        }
+
+        function pushNeighbors(regId, r, c) {
+          for (const [dr, dc] of dirs) {
+            const nr = r + dr, nc = c + dc;
+            if (nr >= 0 && nr < N && nc >= 0 && nc < N && grid[nr][nc] === -1) {
+              frontiers[regId].push([nr, nc]);
+            }
+          }
+        }
+
+        // Only non-anchor regions participate in main flood-fill growth
+        for (let r = 0; r < N; r++) {
+          for (let c = 0; c < N; c++) {
+            const reg = grid[r][c];
+            if (reg !== -1 && !anchorSet.has(reg)) {
+              pushNeighbors(reg, r, c);
+            }
+          }
+        }
+
+        let remaining = 0;
+        for (let r = 0; r < N; r++) {
+          for (let c = 0; c < N; c++) {
+            if (grid[r][c] === -1) remaining++;
+          }
+        }
+
+        // 2) Weighted orthogonal flood-fill (Big Background regions expand widely)
+        while (remaining > 0) {
+          const active = [];
+          let totalW = 0;
+
+          for (let reg = 0; reg < N; reg++) {
+            if (anchorSet.has(reg)) continue;
+            const f = frontiers[reg];
+            while (f.length > 0 && grid[f[f.length - 1][0]][f[f.length - 1][1]] !== -1) {
+              f.pop();
+            }
+            if (f.length > 0) {
+              const isBg = bgSet.has(reg);
+              const w = isBg
+                ? 4.4 / Math.pow(sizes[reg], 0.42)
+                : 1.0 / Math.pow(sizes[reg], 1.15);
+              active.push({ reg, w });
+              totalW += w;
+            }
+          }
+
+          // Fallback: if an empty pocket is completely surrounded by anchors, allow anchor to absorb it
+          if (active.length === 0) {
+            for (let r = 0; r < N; r++) {
+              for (let c = 0; c < N; c++) {
+                if (grid[r][c] !== -1) continue;
+                for (const [dr, dc] of dirs) {
+                  const nr = r + dr, nc = c + dc;
+                  if (nr >= 0 && nr < N && nc >= 0 && nc < N && grid[nr][nc] !== -1) {
+                    grid[r][c] = grid[nr][nc];
+                    sizes[grid[r][c]]++;
+                    remaining--;
+                    break;
+                  }
+                }
+              }
+            }
+            if (remaining > 0) continue;
+            break;
+          }
+
+          let pick = rng() * totalW;
+          let chosenReg = active[0].reg;
+          for (const item of active) {
+            pick -= item.w;
+            if (pick <= 0) {
+              chosenReg = item.reg;
+              break;
+            }
+          }
+
+          const f = frontiers[chosenReg];
+          let cell = null;
+          while (f.length > 0) {
+            const idx = Math.floor(rng() * f.length);
+            const cand = f[idx];
+            f[idx] = f[f.length - 1];
+            f.pop();
+            if (grid[cand[0]][cand[1]] === -1) {
+              cell = cand;
+              break;
+            }
+          }
+
+          if (cell) {
+            const [r, c] = cell;
+            grid[r][c] = chosenReg;
+            sizes[chosenReg]++;
+            remaining--;
+            pushNeighbors(chosenReg, r, c);
+          }
+        }
+
+        // Randomly permute region IDs so colors vary organically
+        const perm = shuffle(Array.from({ length: N }, (_, i) => i), rng);
+        for (let r = 0; r < N; r++) {
+          for (let c = 0; c < N; c++) {
+            grid[r][c] = perm[grid[r][c]];
+          }
+        }
+        return grid;
+      }
+
+      function isRegionContiguous(regions, N, regId) {
+        let total = 0, startR = -1, startC = -1;
+        for (let r = 0; r < N; r++) {
+          for (let c = 0; c < N; c++) {
+            if (regions[r][c] === regId) {
+              total++;
+              if (startR === -1) { startR = r; startC = c; }
+            }
+          }
+        }
+        if (total === 0) return false;
+
+        const visited = new Uint8Array(N * N);
+        const queue = [[startR, startC]];
+        visited[startR * N + startC] = 1;
+        let seen = 1;
+        const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+
+        for (let head = 0; head < queue.length; head++) {
+          const [r, c] = queue[head];
+          for (const [dr, dc] of dirs) {
+            const nr = r + dr, nc = c + dc;
+            if (nr >= 0 && nr < N && nc >= 0 && nc < N &&
+                !visited[nr * N + nc] && regions[nr][nc] === regId) {
+              visited[nr * N + nc] = 1;
+              seen++;
+              queue.push([nr, nc]);
+            }
+          }
+        }
+        return seen === total;
+      }
+
+      /**
+       * Hill-Climbing Uniqueness Refinement:
+       * Reassigns boundary cells where Solution 2 differs from Solution 1
+       * (without touching Solution 1's cat cells) while keeping 4-connectivity.
+       */
+      function refineToUnique(regions, N, solutionCols, rng) {
+        const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+        let res = countSolutions(regions, N, 2);
+        if (res.count === 1) return true;
+        if (res.count === 0) return false;
+
+        for (let step = 0; step < 55; step++) {
+          const sol1 = solutionCols;
+          let altSol = res.solutions[0];
+          if (altSol.every((c, r) => c === sol1[r])) altSol = res.solutions[1];
+          if (!altSol) return true;
+
+          const diffCells = [];
+          for (let r = 0; r < N; r++) {
+            if (altSol[r] !== sol1[r]) diffCells.push([r, altSol[r]]);
+          }
+          shuffle(diffCells, rng);
+
+          let mutated = false;
+          for (const [r, c] of diffCells) {
+            const oldReg = regions[r][c];
+            const adjRegs = [];
+            for (const [dr, dc] of dirs) {
+              const nr = r + dr, nc = c + dc;
+              if (nr >= 0 && nr < N && nc >= 0 && nc < N) {
+                const nReg = regions[nr][nc];
+                if (nReg !== oldReg && !adjRegs.includes(nReg)) adjRegs.push(nReg);
+              }
+            }
+            shuffle(adjRegs, rng);
+
+            for (const newReg of adjRegs) {
+              regions[r][c] = newReg;
+              if (isRegionContiguous(regions, N, oldReg)) {
+                mutated = true;
+                break;
+              } else {
+                regions[r][c] = oldReg;
+              }
+            }
+            if (mutated) break;
+          }
+
+          if (!mutated) return false;
+
+          res = countSolutions(regions, N, 2);
+          if (res.count === 1) return true;
+          if (res.count === 0) return false;
+        }
+        return false;
+      }
+
+      /**
+       * Asynchronous chunked puzzle generator so 9x9 and 10x10 never freeze UI.
+       */
+      let activeGenToken = 0;
+
+      function generatePuzzleAsync(N, onDone) {
+        const token = ++activeGenToken;
+        const rng = createRng((Date.now() ^ (Math.random() * 0xFFFFFFFF)) >>> 0);
+        const batchSize = N >= 9 ? 6 : 14;
+        const maxAttempts = N >= 9 ? 420 : 280;
+        let attempts = 0;
+        let uniqueBackup = null;
+
+        function runBatch() {
+          if (token !== activeGenToken) return;
+
+          for (let i = 0; i < batchSize && attempts < maxAttempts; i++) {
+            attempts++;
+            const solutionCols = generateCatPlacement(N, rng);
+            const regions = growAuthenticRegions(N, solutionCols, rng);
+
+            if (refineToUnique(regions, N, solutionCols, rng)) {
+              const verify = countSolutions(regions, N, 2);
+              if (verify.count !== 1) continue;
+
+              if (isHumanSolvable(N, regions)) {
+                const chosenPalette = shuffle(REGION_PALETTE.slice(), rng).slice(0, N);
+                onDone({ N, regions, solutionCols: verify.solutions[0], palette: chosenPalette });
+                return;
+              }
+
+              if (!uniqueBackup) {
+                uniqueBackup = {
+                  N,
+                  regions: regions.map(row => row.slice()),
+                  solutionCols: verify.solutions[0],
+                  palette: shuffle(REGION_PALETTE.slice(), rng).slice(0, N)
+                };
+              }
+            }
+          }
+
+          if (attempts < maxAttempts) {
+            setTimeout(runBatch, 0);
+          } else if (uniqueBackup) {
+            onDone(uniqueBackup);
+          } else {
+            // Very rare: restart with fresh seed
+            setTimeout(() => generatePuzzleAsync(N, onDone), 0);
+          }
+        }
+
+        setTimeout(runBatch, 16);
+      }
+
+      /* ==========================================================================
+         GAME STATE & DOM REFERENCES
+         ========================================================================== */
+      const state = {
+        N: prefs.boardSize || 8,
+        regions: [],
+        solutionCols: [],
+        palette: [],
+        board: [],
+        autoOwners: [],
+        undoStack: [],
+        lives: MAX_LIVES,
+        solved: false,
+        outOfFish: false,
+        seconds: 0,
+        timerId: null,
+        paused: false,
+        activeHint: null,
+        guardTimer: null
+      };
+
+      const dom = {
+        levelBadge: document.getElementById('levelBadge'),
+        puzzleSubtitle: document.getElementById('puzzleSubtitle'),
+        sizeBtns: document.querySelectorAll('.size-btn'),
+        catFoundNum: document.getElementById('catFoundNum'),
+        catTotalNum: document.getElementById('catTotalNum'),
+        fishLives: document.getElementById('fishLives'),
+        timerDisplay: document.getElementById('timerDisplay'),
+        solvedDisplay: document.getElementById('solvedDisplay'),
+        statusBanner: document.getElementById('statusBanner'),
+        statusText: document.getElementById('statusText'),
+        btnApplyHint: document.getElementById('btnApplyHint'),
+        btnCloseBanner: document.getElementById('btnCloseBanner'),
+        boardGrid: document.getElementById('boardGrid'),
+        boardLoading: document.getElementById('boardLoading'),
+        loadingLabel: document.getElementById('loadingLabel'),
+        btnUndo: document.getElementById('btnUndo'),
+        btnAutoX: document.getElementById('btnAutoX'),
+        btnHint: document.getElementById('btnHint'),
+        btnClear: document.getElementById('btnClear'),
+        btnNew: document.getElementById('btnNew'),
+        btnSound: document.getElementById('btnSound'),
+        btnTheme: document.getElementById('btnTheme'),
+        btnHelp: document.getElementById('btnHelp'),
+        helpModal: document.getElementById('helpModal'),
+        btnCloseHelp: document.getElementById('btnCloseHelp'),
+        btnGotIt: document.getElementById('btnGotIt'),
+        outOfFishModal: document.getElementById('outOfFishModal'),
+        btnRefillFish: document.getElementById('btnRefillFish'),
+        btnRetryBoard: document.getElementById('btnRetryBoard'),
+        victoryModal: document.getElementById('victoryModal'),
+        victorySubtitle: document.getElementById('victorySubtitle'),
+        vLevel: document.getElementById('vLevel'),
+        vTime: document.getElementById('vTime'),
+        vFish: document.getElementById('vFish'),
+        btnNextLevel: document.getElementById('btnNextLevel'),
+        btnAdmireBoard: document.getElementById('btnAdmireBoard'),
+        confettiCanvas: document.getElementById('confettiCanvas')
+      };
+
+      /* ==========================================================================
+         INLINE SVG TEMPLATES (CAT FACE, X MARK, GOLDEN FISH)
+         ========================================================================== */
+      function getPlacedCatSVG() {
+        return `
+          <svg class="cat-svg" viewBox="0 0 64 64" aria-hidden="true">
+            <path d="M12 26 L9 8 L25 16.5 C29 15.2 35 15.2 39 16.5 L55 8 L52 26 C55.5 31 56.5 38 53.5 45 C50 53 41.5 57 32 57 C22.5 57 14 53 10.5 45 C7.5 38 8.5 31 12 26 Z" fill="#2D2420"/>
+            <path d="M14.5 21.5 L13 13 L21.5 17.5 Z" fill="#F4A59A"/>
+            <path d="M49.5 21.5 L51 13 L42.5 17.5 Z" fill="#F4A59A"/>
+            <path d="M16 40 C16 32.5 22.5 27.5 32 27.5 C41.5 27.5 48 32.5 48 40 C48 49.5 41 55 32 55 C23 55 16 49.5 16 40 Z" fill="#FFFFFF"/>
+            <circle cx="24" cy="36.5" r="3.6" fill="#2D2420"/>
+            <circle cx="40" cy="36.5" r="3.6" fill="#2D2420"/>
+            <circle cx="25.2" cy="35.1" r="1.2" fill="#FFFFFF"/>
+            <circle cx="41.2" cy="35.1" r="1.2" fill="#FFFFFF"/>
+            <path d="M29.2 41.8 L34.8 41.8 L32 44.8 Z" fill="#F28482"/>
+            <path d="M27.5 46.8 Q30 49.4 32 47.2 Q34 49.4 36.5 46.8" fill="none" stroke="#2D2420" stroke-width="2.1" stroke-linecap="round"/>
+          </svg>
+        `;
+      }
+
+      function getMarkXSVG() {
+        return `
+          <svg class="mark-x" viewBox="0 0 24 24" aria-hidden="true">
+            <line x1="4.5" y1="4.5" x2="19.5" y2="19.5"/>
+            <line x1="19.5" y1="4.5" x2="4.5" y2="19.5"/>
+          </svg>
+        `;
+      }
+
+      function getFishSVG(isLost, isLosing) {
+        const cls = `fish-icon${isLost ? ' lost' : ''}${isLosing ? ' losing' : ''}`;
+        return `
+          <svg class="${cls}" viewBox="0 0 36 36" aria-hidden="true">
+            <path d="M25 18 C25 11.5 18.5 7.5 11.5 9.8 C7.5 11.1 4.5 14.5 3.5 18 C4.5 21.5 7.5 24.9 11.5 26.2 C18.5 28.5 25 24.5 25 18 Z" fill="#F5A623"/>
+            <path d="M24 18 L32.5 11 L30.5 18 L32.5 25 Z" fill="#E88B14"/>
+            <path d="M13 10.5 Q17 14 17 18 Q17 22 13 25.5" fill="none" stroke="#FFD166" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="9.8" cy="15.8" r="1.7" fill="#2D2420"/>
+            <circle cx="10.3" cy="15.2" r="0.6" fill="#FFFFFF"/>
+          </svg>
+        `;
+      }
+
+      /* ==========================================================================
+         UI HELPERS (Theme, Sound, Fish Lives, Banner, Timer)
+         ========================================================================== */
+      function formatTime(sec) {
+        return `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
+      }
+
+      function updateThemeUI() {
+        document.documentElement.setAttribute('data-theme', prefs.theme);
+        dom.btnTheme.innerHTML = prefs.theme === 'dark'
+          ? `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M4.93 4.93l1.77 1.77M17.3 17.3l1.77 1.77M2 12h2.5M19.5 12H22M4.93 19.07l1.77-1.77M17.3 6.7l1.77-1.77"/></svg>`
+          : `<svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>`;
+        // Re-apply tile colors for dark/light theme contrast
+        applyTileThemeColors();
+      }
+
+      function updateSoundUI() {
+        dom.btnSound.innerHTML = prefs.muted
+          ? `<svg viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="22" y1="9" x2="16" y2="15"/><line x1="16" y1="9" x2="22" y2="15"/></svg>`
+          : `<svg viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg>`;
+      }
+
+      function updateAutoXUI() {
+        dom.btnAutoX.classList.toggle('toggle-on', prefs.autoX);
+        dom.btnAutoX.setAttribute('aria-pressed', String(prefs.autoX));
+      }
+
+      function renderFishLives(lostIndex = -1) {
+        let html = '';
+        for (let i = 0; i < MAX_LIVES; i++) {
+          const isLost = i >= state.lives;
+          const isLosing = i === lostIndex;
+          html += getFishSVG(isLost, isLosing);
+        }
+        dom.fishLives.innerHTML = html;
+      }
+
+      function setBanner(text, type = 'default', dismissible = false, showApply = false) {
+        dom.statusBanner.className = 'status-banner' + (type !== 'default' ? ` ${type}` : '');
+        dom.statusText.textContent = text;
+        dom.btnCloseBanner.style.display = dismissible ? 'inline-block' : 'none';
+        dom.btnApplyHint.style.display = showApply ? 'inline-block' : 'none';
+      }
+
+      function resetBanner() {
+        setBanner('Tap once for ✕, tap again to place a Cat. Drag to mark ✕!', 'default', false, false);
+      }
+
+      function clearActiveHint() {
+        state.activeHint = null;
+        dom.btnApplyHint.style.display = 'none';
+      }
+
+      function clearGuardHighlights() {
+        if (state.guardTimer) {
+          clearTimeout(state.guardTimer);
+          state.guardTimer = null;
+        }
+        for (let r = 0; r < tileEls.length; r++) {
+          for (let c = 0; c < tileEls[r].length; c++) {
+            tileEls[r][c].classList.remove('wrong-shake', 'conflict-flash');
+          }
+        }
+      }
+
+      function stopTimer() {
+        if (state.timerId) {
+          clearInterval(state.timerId);
+          state.timerId = null;
+        }
+      }
+
+      function startTimer() {
+        stopTimer();
+        state.timerId = setInterval(() => {
+          if (!state.paused && !state.solved && !state.outOfFish) {
+            state.seconds++;
+            dom.timerDisplay.textContent = formatTime(state.seconds);
+          }
+        }, 1000);
+      }
+
+      function initBoardArrays(N) {
+        state.board = Array.from({ length: N }, () => new Array(N).fill(EMPTY));
+        state.autoOwners = Array.from({ length: N }, () =>
+          Array.from({ length: N }, () => new Set())
+        );
+        state.undoStack = [];
+      }
+
+      function updateStatsUI() {
+        let catCount = 0;
+        for (let r = 0; r < state.N; r++) {
+          for (let c = 0; c < state.N; c++) {
+            if (state.board[r][c] === CAT) catCount++;
+          }
+        }
+        dom.levelBadge.textContent = `Level ${prefs.level}`;
+        dom.catFoundNum.textContent = String(catCount);
+        dom.catTotalNum.textContent = String(state.N);
+        dom.solvedDisplay.textContent = String(prefs.solvedTotal);
+        dom.btnUndo.disabled = state.undoStack.length === 0 || state.solved || state.outOfFish;
+      }
+
+      /* ==========================================================================
+         START NEW PUZZLE (ASYNC) & RETRY SAME BOARD
+         ========================================================================== */
+      function startNewGame(size = state.N) {
+        state.N = size;
+        prefs.boardSize = size;
+        saveStorage();
+
+        state.solved = false;
+        state.outOfFish = false;
+        state.lives = MAX_LIVES;
+        state.seconds = 0;
+        state.paused = false;
+        clearActiveHint();
+        clearGuardHighlights();
+        stopTimer();
+
+        dom.sizeBtns.forEach(btn => {
+          btn.classList.toggle('active', Number(btn.dataset.size) === size);
+        });
+
+        dom.puzzleSubtitle.textContent = `${size}×${size} · Pure Logic · Unique Solution`;
+        dom.timerDisplay.textContent = '00:00';
+        renderFishLives();
+        dom.loadingLabel.textContent = `Generating ${size}×${size} puzzle...`;
+        dom.boardLoading.classList.add('visible');
+
+        generatePuzzleAsync(size, (puzzle) => {
+          state.regions = puzzle.regions;
+          state.solutionCols = puzzle.solutionCols;
+          state.palette = puzzle.palette;
+          initBoardArrays(size);
+
+          dom.boardLoading.classList.remove('visible');
+          buildGridDOM();
+          renderBoard();
+          updateStatsUI();
+          resetBanner();
+          startTimer();
+        });
+      }
+
+      function retryCurrentBoard() {
+        state.solved = false;
+        state.outOfFish = false;
+        state.lives = MAX_LIVES;
+        state.seconds = 0;
+        state.paused = false;
+        clearActiveHint();
+        clearGuardHighlights();
+        initBoardArrays(state.N);
+        dom.timerDisplay.textContent = '00:00';
+        renderFishLives();
+        renderBoard();
+        updateStatsUI();
+        resetBanner();
+        startTimer();
+      }
+
+      /* ==========================================================================
+         UNDO SNAPSHOT SYSTEM & AUTO-X TRACKING
+         ========================================================================== */
+      function pushUndoSnapshot() {
+        const boardCopy = state.board.map(row => row.slice());
+        const ownersCopy = state.autoOwners.map(row => row.map(set => new Set(set)));
+        state.undoStack.push({ board: boardCopy, autoOwners: ownersCopy });
+        if (state.undoStack.length > 100) state.undoStack.shift();
+        dom.btnUndo.disabled = false;
+      }
+
+      function undoLastMove() {
+        if (state.undoStack.length === 0 || state.solved || state.outOfFish) return;
+        const snap = state.undoStack.pop();
+        state.board = snap.board;
+        state.autoOwners = snap.autoOwners;
+        clearActiveHint();
+        clearGuardHighlights();
+        resetBanner();
+        Sound.pop(300);
+        renderBoard();
+        updateStatsUI();
+      }
+
+      function getBlockedCellsForCat(cr, cc) {
+        const N = state.N;
+        const reg = state.regions[cr][cc];
+        const blocked = [];
+        for (let r = 0; r < N; r++) {
+          for (let c = 0; c < N; c++) {
+            if (r === cr && c === cc) continue;
+            if (r === cr || c === cc || state.regions[r][c] === reg ||
+                (Math.abs(r - cr) <= 1 && Math.abs(c - cc) <= 1)) {
+              blocked.push([r, c]);
+            }
+          }
+        }
+        return blocked;
+      }
+
+      function applyAutoXForCat(cr, cc) {
+        if (!prefs.autoX) return;
+        const key = `${cr},${cc}`;
+        for (const [r, c] of getBlockedCellsForCat(cr, cc)) {
+          state.autoOwners[r][c].add(key);
+          if (state.board[r][c] === EMPTY) {
+            state.board[r][c] = AUTO_X;
+          }
+        }
+      }
+
+      function rebuildAllAutoX() {
+        for (let r = 0; r < state.N; r++) {
+          for (let c = 0; c < state.N; c++) {
+            state.autoOwners[r][c].clear();
+            if (state.board[r][c] === AUTO_X) state.board[r][c] = EMPTY;
+          }
+        }
+        if (prefs.autoX) {
+          for (let r = 0; r < state.N; r++) {
+            for (let c = 0; c < state.N; c++) {
+              if (state.board[r][c] === CAT) applyAutoXForCat(r, c);
+            }
+          }
+        }
+      }
+
+      /* ==========================================================================
+         INSTANT WRONG-CAT GUARD WITH 3 FISH LIVES
+         ========================================================================== */
+      function validateCatPlacement(r, c) {
+        const N = state.N;
+        const reg = state.regions[r][c];
+        const conflictingCats = [];
+        let message = '';
+
+        // 1. Direct rule conflict with already-placed cat(s)
+        for (let cr = 0; cr < N; cr++) {
+          for (let cc = 0; cc < N; cc++) {
+            if (state.board[cr][cc] !== CAT) continue;
+            const sameRow = cr === r;
+            const sameCol = cc === c;
+            const sameReg = state.regions[cr][cc] === reg;
+            const dr = Math.abs(cr - r);
+            const dc = Math.abs(cc - c);
+            const touching = dr <= 1 && dc <= 1;
+
+            if (sameRow || sameCol || sameReg || touching) {
+              conflictingCats.push([cr, cc]);
+              if (!message) {
+                if (sameRow) {
+                  message = `Conflict: Another cat is already in Row ${r + 1}! (−1 Fish)`;
+                } else if (sameCol) {
+                  message = `Conflict: Another cat is already in Col ${c + 1}! (−1 Fish)`;
+                } else if (sameReg) {
+                  message = `Conflict: Another cat is already in ${state.palette[reg].name}! (−1 Fish)`;
+                } else if (dr === 1 && dc === 1) {
+                  message = `Conflict: Cats cannot touch diagonally! (−1 Fish)`;
+                } else {
+                  message = `Conflict: Cats cannot touch orthogonally! (−1 Fish)`;
+                }
+              }
+            }
+          }
+        }
+
+        if (conflictingCats.length > 0) {
+          return { allowed: false, message, conflictingCats };
+        }
+
+        // 2. Wrong cell vs. puzzle's unique solution
+        if (state.solutionCols[r] !== c) {
+          return {
+            allowed: false,
+            message: `Wrong cell! A cat does not belong here. (−1 Fish)`,
+            conflictingCats: []
+          };
+        }
+
+        return { allowed: true };
+      }
+
+      function triggerWrongCatBlock(r, c, message, conflictingCats) {
+        const lostFishIdx = state.lives - 1;
+        state.lives = Math.max(0, state.lives - 1);
+        Sound.errorBuzz();
+        clearActiveHint();
+        clearGuardHighlights();
+        renderFishLives(lostFishIdx);
+
+        const targetEl = tileEls[r][c];
+        void targetEl.offsetWidth;
+        targetEl.classList.add('wrong-shake');
+
+        for (const [cr, cc] of conflictingCats) {
+          const catEl = tileEls[cr][cc];
+          void catEl.offsetWidth;
+          catEl.classList.add('conflict-flash');
+        }
+
+        setBanner(`⚠️ ${message}`, 'error', true, false);
+        updateStatsUI();
+
+        state.guardTimer = setTimeout(() => {
+          clearGuardHighlights();
+        }, 1150);
+
+        if (state.lives === 0) {
+          state.outOfFish = true;
+          updateStatsUI();
+          setTimeout(() => {
+            dom.outOfFishModal.classList.add('open');
+          }, 420);
+        }
+      }
+
+      /* ==========================================================================
+         WIN CONDITION & VICTORY
+         ========================================================================== */
+      function checkWinCondition() {
+        if (state.solved) return;
+        let count = 0;
+        const rows = new Set(), cols = new Set(), regs = new Set();
+        for (let r = 0; r < state.N; r++) {
+          for (let c = 0; c < state.N; c++) {
+            if (state.board[r][c] === CAT) {
+              count++;
+              rows.add(r);
+              cols.add(c);
+              regs.add(state.regions[r][c]);
+            }
+          }
+        }
+        if (count === state.N && rows.size === state.N && cols.size === state.N && regs.size === state.N) {
+          handleVictory();
+        }
+      }
+
+      function handleVictory() {
+        state.solved = true;
+        stopTimer();
+        clearActiveHint();
+        clearGuardHighlights();
+        Sound.victory();
+        launchConfetti();
+
+        const completedLevel = prefs.level;
+        prefs.level++;
+        prefs.solvedTotal++;
+        saveStorage();
+        updateStatsUI();
+
+        setBanner(`Purr-fect! Level ${completedLevel} solved in ${formatTime(state.seconds)} 🎉`, 'success', false, false);
+
+        dom.victorySubtitle.textContent = `You solved Level ${completedLevel} (${state.N}×${state.N})!`;
+        dom.vLevel.textContent = String(completedLevel);
+        dom.vTime.textContent = formatTime(state.seconds);
+        dom.vFish.textContent = `${state.lives} / ${MAX_LIVES}`;
+
+        setTimeout(() => {
+          dom.victoryModal.classList.add('open');
+        }, 420);
+      }
+
+      /* ==========================================================================
+         HINT CONTROLLER (8-RULE ENGINE + 1-TAP APPLY)
+         ========================================================================== */
+      function computeTrueHint() {
+        const N = state.N;
+
+        // RULE 1: Check if player mistakenly placed X on a true solution cat cell
+        for (let r = 0; r < N; r++) {
+          const c = state.solutionCols[r];
+          if (state.board[r][c] === MANUAL_X || state.board[r][c] === AUTO_X) {
+            return {
+              targets: [[r, c]],
+              secondary: [],
+              text: `Wrong ✕ at ${formatCell(r, c)} (${state.palette[state.regions[r][c]].name})! Remove this ✕ to continue.`,
+              action: { type: 'clear_cell', cells: [[r, c]] }
+            };
+          }
+        }
+
+        // RULES 2–8: Genuine Human Deductions
+        const step = findNextLogicalStep(N, state.regions, state.board, state.palette);
+        if (step) return step;
+
+        return {
+          targets: [],
+          secondary: [],
+          text: 'Mark a few more ✕ eliminations around small color regions, then tap Hint again!',
+          action: null
+        };
+      }
+
+      function triggerHint() {
+        if (state.solved || state.outOfFish) return;
+        clearGuardHighlights();
+        const hint = computeTrueHint();
+        state.activeHint = hint;
+        Sound.hint();
+        setBanner('💡 ' + hint.text, 'hint', true, Boolean(hint.action));
+        renderBoard();
+      }
+
+      function applyActiveHint() {
+        if (!state.activeHint || !state.activeHint.action || state.solved || state.outOfFish) return;
+        const { type, cells } = state.activeHint.action;
+        pushUndoSnapshot();
+        clearActiveHint();
+
+        if (type === 'place_cat') {
+          const [r, c] = cells[0];
+          state.board[r][c] = CAT;
+          applyAutoXForCat(r, c);
+          Sound.catPurr();
+        } else if (type === 'mark_x') {
+          for (const [r, c] of cells) {
+            if (state.board[r][c] === EMPTY) state.board[r][c] = MANUAL_X;
+          }
+          Sound.pop(460);
+        } else if (type === 'clear_cell') {
+          for (const [r, c] of cells) {
+            state.board[r][c] = EMPTY;
+          }
+          Sound.pop(310);
+        }
+
+        resetBanner();
+        renderBoard();
+      }
+
+      /* ==========================================================================
+         DOM GRID BUILDER & RENDERER
+         ========================================================================== */
+      let tileEls = [];
+
+      function applyTileThemeColors() {
+        if (!state.palette.length || !tileEls.length) return;
+        const isDark = prefs.theme === 'dark';
+        for (let r = 0; r < state.N; r++) {
+          for (let c = 0; c < state.N; c++) {
+            const p = state.palette[state.regions[r][c]];
+            tileEls[r][c].style.backgroundColor = isDark ? p.dark : p.color;
+          }
+        }
+      }
+
+      function buildGridDOM() {
+        const N = state.N;
+        dom.boardGrid.innerHTML = '';
+        dom.boardGrid.className = `board-grid size-${N}`;
+        dom.boardGrid.style.gridTemplateColumns = `repeat(${N}, 1fr)`;
+        dom.boardGrid.style.gridTemplateRows = `repeat(${N}, 1fr)`;
+
+        tileEls = Array.from({ length: N }, () => new Array(N));
+        const isDark = prefs.theme === 'dark';
+
+        for (let r = 0; r < N; r++) {
+          for (let c = 0; c < N; c++) {
+            const regId = state.regions[r][c];
+            const p = state.palette[regId];
+
+            const tile = document.createElement('div');
+            tile.className = 'tile';
+            tile.dataset.r = r;
+            tile.dataset.c = c;
+            tile.style.backgroundColor = isDark ? p.dark : p.color;
+            tile.setAttribute('role', 'gridcell');
+            tile.setAttribute('aria-label', `Row ${r + 1} Column ${c + 1}, ${p.name}`);
+
+            // Persistent Embossed Background Pattern + Dynamic Content Layer
+            tile.innerHTML = `
+              <svg class="tile-pattern" viewBox="0 0 24 24" aria-hidden="true">${p.pattern}</svg>
+              <span class="tile-layer" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;"></span>
+            `;
+
+            dom.boardGrid.appendChild(tile);
+            tileEls[r][c] = tile;
+          }
+        }
+      }
+
+      function renderBoard() {
+        const targetSet = new Set(
+          state.activeHint && state.activeHint.targets
+            ? state.activeHint.targets.map(([r, c]) => `${r},${c}`)
+            : []
+        );
+        const secondarySet = new Set(
+          state.activeHint && state.activeHint.secondary
+            ? state.activeHint.secondary.map(([r, c]) => `${r},${c}`)
+            : []
+        );
+
+        for (let r = 0; r < state.N; r++) {
+          for (let c = 0; c < state.N; c++) {
+            const tile = tileEls[r][c];
+            const val = state.board[r][c];
+            const key = `${r},${c}`;
+
+            if (tile.dataset.rendered !== String(val)) {
+              tile.dataset.rendered = String(val);
+              const layer = tile.querySelector('.tile-layer');
+              if (val === CAT) layer.innerHTML = getPlacedCatSVG();
+              else if (val === MANUAL_X || val === AUTO_X) layer.innerHTML = getMarkXSVG();
+              else layer.innerHTML = '';
+            }
+
+            tile.classList.toggle('has-cat', val === CAT);
+            tile.classList.toggle('has-x', val === MANUAL_X || val === AUTO_X);
+            tile.classList.toggle('auto-x', val === AUTO_X);
+            tile.classList.toggle('hint-target', targetSet.has(key));
+            tile.classList.toggle('hint-secondary', secondarySet.has(key));
+          }
+        }
+
+        updateStatsUI();
+        checkWinCondition();
+      }
+
+      /* ==========================================================================
+         POINTER INTERACTION: TAP CYCLE (Empty -> X -> Cat) + DRAG-TO-MARK X
+         ========================================================================== */
+      const pointer = {
+        active: false,
+        dragging: false,
+        startR: -1,
+        startC: -1,
+        paintMode: MANUAL_X,
+        lastKey: '',
+        snapshotTaken: false
+      };
+
+      function getTileCoordsFromPoint(x, y) {
+        const el = document.elementFromPoint(x, y);
+        if (!el) return null;
+        const tile = el.closest('.tile');
+        if (!tile || !dom.boardGrid.contains(tile)) return null;
+        return { r: Number(tile.dataset.r), c: Number(tile.dataset.c) };
+      }
+
+      function applyDragTile(r, c) {
+        const val = state.board[r][c];
+        if (val === CAT) return;
+
+        if (pointer.paintMode === MANUAL_X && val === EMPTY) {
+          if (!pointer.snapshotTaken) {
+            pushUndoSnapshot();
+            pointer.snapshotTaken = true;
+          }
+          state.board[r][c] = MANUAL_X;
+          Sound.pop(440);
+          renderBoard();
+        } else if (pointer.paintMode === EMPTY && val === MANUAL_X) {
+          if (!pointer.snapshotTaken) {
+            pushUndoSnapshot();
+            pointer.snapshotTaken = true;
+          }
+          state.board[r][c] = EMPTY;
+          Sound.pop(300);
+          renderBoard();
+        }
+      }
+
+      function handleTileTap(r, c) {
+        if (state.solved || state.outOfFish) return;
+        const current = state.board[r][c];
+
+        // Confirmed Cats are safely locked (happy nod feedback)
+        if (current === CAT) {
+          const tile = tileEls[r][c];
+          tile.classList.remove('cat-locked-tap');
+          void tile.offsetWidth;
+          tile.classList.add('cat-locked-tap');
+          Sound.pop(560);
+          return;
+        }
+
+        // Tap 1: Empty -> X
+        if (current === EMPTY) {
+          clearActiveHint();
+          clearGuardHighlights();
+          resetBanner();
+          pushUndoSnapshot();
+          state.board[r][c] = MANUAL_X;
+          Sound.pop(430);
+          renderBoard();
+          return;
+        }
+
+        // Tap 2: X / Auto-X -> Attempt Cat Placement (Guarded!)
+        if (current === MANUAL_X || current === AUTO_X) {
+          const check = validateCatPlacement(r, c);
+          if (!check.allowed) {
+            triggerWrongCatBlock(r, c, check.message, check.conflictingCats);
+            return;
+          }
+
+          clearActiveHint();
+          clearGuardHighlights();
+          resetBanner();
+          pushUndoSnapshot();
+          state.board[r][c] = CAT;
+          applyAutoXForCat(r, c);
+          Sound.catPurr();
+          renderBoard();
+        }
+      }
+
+      dom.boardGrid.addEventListener('pointerdown', (e) => {
+        if (state.solved || state.outOfFish || e.button === 2) return;
+        const coords = getTileCoordsFromPoint(e.clientX, e.clientY);
+        if (!coords) return;
+
+        e.preventDefault();
+        pointer.active = true;
+        pointer.dragging = false;
+        pointer.startR = coords.r;
+        pointer.startC = coords.c;
+        pointer.lastKey = `${coords.r},${coords.c}`;
+        pointer.snapshotTaken = false;
+        pointer.paintMode = state.board[coords.r][coords.c] === MANUAL_X ? EMPTY : MANUAL_X;
+
+        if (dom.boardGrid.setPointerCapture) {
+          try { dom.boardGrid.setPointerCapture(e.pointerId); } catch (_) {}
+        }
+      });
+
+      dom.boardGrid.addEventListener('pointermove', (e) => {
+        if (!pointer.active || state.solved || state.outOfFish) return;
+        const coords = getTileCoordsFromPoint(e.clientX, e.clientY);
+        if (!coords) return;
+
+        const key = `${coords.r},${coords.c}`;
+        if (key === pointer.lastKey) return;
+        pointer.lastKey = key;
+
+        if (!pointer.dragging) {
+          pointer.dragging = true;
+          clearActiveHint();
+          clearGuardHighlights();
+          resetBanner();
+          applyDragTile(pointer.startR, pointer.startC);
+        }
+        applyDragTile(coords.r, coords.c);
+      });
+
+      function endPointer() {
+        if (!pointer.active) return;
+        const wasDragging = pointer.dragging;
+        const sr = pointer.startR, sc = pointer.startC;
+        pointer.active = false;
+        pointer.dragging = false;
+        if (!wasDragging && sr >= 0 && sc >= 0) {
+          handleTileTap(sr, sc);
+        }
+      }
+
+      dom.boardGrid.addEventListener('pointerup', endPointer);
+      dom.boardGrid.addEventListener('pointercancel', () => {
+        pointer.active = false;
+        pointer.dragging = false;
+      });
+
+      /* ==========================================================================
+         CONFETTI CELEBRATION
+         ========================================================================== */
+      let confettiFrame = null;
+
+      function launchConfetti() {
+        const canvas = dom.confettiCanvas;
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const colors = ['#38A3B8', '#F48FB1', '#8E7CC3', '#F6D576', '#F59B56', '#81C784'];
+        const particles = Array.from({ length: 120 }, () => ({
+          x: canvas.width * (0.2 + Math.random() * 0.6),
+          y: canvas.height * 0.35 + (Math.random() - 0.5) * 60,
+          vx: (Math.random() - 0.5) * 11,
+          vy: -Math.random() * 11 - 3,
+          size: 6 + Math.random() * 6,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rot: Math.random() * Math.PI * 2,
+          vRot: (Math.random() - 0.5) * 0.22,
+          life: 1
+        }));
+
+        if (confettiFrame) cancelAnimationFrame(confettiFrame);
+
+        function tick() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          let alive = 0;
+
+          for (const p of particles) {
+            if (p.life <= 0) continue;
+            alive++;
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.28;
+            p.vx *= 0.99;
+            p.rot += p.vRot;
+            p.life -= 0.011;
+
+            ctx.save();
+            ctx.globalAlpha = Math.max(0, p.life);
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rot);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.size / 2, -p.size / 3, p.size, p.size * 0.66);
+            ctx.restore();
+          }
+
+          if (alive > 0) {
+            confettiFrame = requestAnimationFrame(tick);
+          } else {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            confettiFrame = null;
+          }
+        }
+        tick();
+      }
+
+      /* ==========================================================================
+         EVENT LISTENERS & INITIALIZATION
+         ========================================================================== */
+      dom.sizeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          Sound.pop(500);
+          startNewGame(Number(btn.dataset.size));
+        });
+      });
+
+      dom.btnUndo.addEventListener('click', undoLastMove);
+
+      dom.btnAutoX.addEventListener('click', () => {
+        prefs.autoX = !prefs.autoX;
+        saveStorage();
+        updateAutoXUI();
+        if (!state.solved && !state.outOfFish) {
+          pushUndoSnapshot();
+          rebuildAllAutoX();
+          renderBoard();
+        }
+        Sound.pop(prefs.autoX ? 520 : 340);
+      });
+
+      dom.btnHint.addEventListener('click', triggerHint);
+      dom.btnApplyHint.addEventListener('click', applyActiveHint);
+
+      dom.btnClear.addEventListener('click', () => {
+        if (state.solved || state.outOfFish) return;
+        const hasAny = state.board.some(row => row.some(v => v !== EMPTY));
+        if (!hasAny) return;
+        pushUndoSnapshot();
+        clearActiveHint();
+        clearGuardHighlights();
+        for (let r = 0; r < state.N; r++) {
+          for (let c = 0; c < state.N; c++) {
+            state.board[r][c] = EMPTY;
+            state.autoOwners[r][c].clear();
+          }
+        }
+        Sound.pop(280);
+        resetBanner();
+        renderBoard();
+      });
+
+      dom.btnNew.addEventListener('click', () => {
+        Sound.pop(480);
+        startNewGame(state.N);
+      });
+
+      dom.btnCloseBanner.addEventListener('click', () => {
+        clearActiveHint();
+        clearGuardHighlights();
+        resetBanner();
+        renderBoard();
+      });
+
+      dom.btnTheme.addEventListener('click', () => {
+        prefs.theme = prefs.theme === 'dark' ? 'light' : 'dark';
+        saveStorage();
+        updateThemeUI();
+        Sound.pop(460);
+      });
+
+      dom.btnSound.addEventListener('click', () => {
+        prefs.muted = !prefs.muted;
+        saveStorage();
+        updateSoundUI();
+        if (!prefs.muted) Sound.pop(520);
+      });
+
+      function openHelp() { state.paused = true; dom.helpModal.classList.add('open'); }
+      function closeHelp() { state.paused = false; dom.helpModal.classList.remove('open'); }
+
+      dom.btnHelp.addEventListener('click', openHelp);
+      dom.btnCloseHelp.addEventListener('click', closeHelp);
+      dom.btnGotIt.addEventListener('click', closeHelp);
+      dom.helpModal.addEventListener('click', (e) => { if (e.target === dom.helpModal) closeHelp(); });
+
+      // Out of Fish Modal Actions
+      dom.btnRefillFish.addEventListener('click', () => {
+        dom.outOfFishModal.classList.remove('open');
+        state.lives = 1;
+        state.outOfFish = false;
+        renderFishLives();
+        updateStatsUI();
+        setBanner('🐟 Refilled 1 Fish Life! Take your time and use Hint if needed.', 'success', true, false);
+        Sound.catPurr();
+      });
+
+      dom.btnRetryBoard.addEventListener('click', () => {
+        dom.outOfFishModal.classList.remove('open');
+        Sound.pop(460);
+        retryCurrentBoard();
+      });
+
+      // Victory Modal Actions
+      dom.btnNextLevel.addEventListener('click', () => {
+        dom.victoryModal.classList.remove('open');
+        Sound.pop(520);
+        startNewGame(state.N);
+      });
+
+      dom.btnAdmireBoard.addEventListener('click', () => dom.victoryModal.classList.remove('open'));
+      dom.victoryModal.addEventListener('click', (e) => {
+        if (e.target === dom.victoryModal) dom.victoryModal.classList.remove('open');
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+          e.preventDefault();
+          undoLastMove();
+        }
+      });
+
+      window.addEventListener('load', () => {
+        updateThemeUI();
+        updateSoundUI();
+        updateAutoXUI();
+        startNewGame(prefs.boardSize || 8);
+      });
+    })();
+  </script>
+</body>
+</html>
+```
